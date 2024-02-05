@@ -22,7 +22,7 @@
 \addbibresource{bethard.bib}
 \addbibresource{extra.bib}
 \renewcommand*{\bibfont}{\scriptsize}
-\newcommand{\smallcite}[1]{{\scriptsize\parencite{#1}}}
+\newcommand{\subtitlecite}[1]{{\hskip0pt plus 1filll \scriptsize\parencite{#1}}}
 
 % Define UA colors
 % https://brand.arizona.edu/applying-the-brand/colors
@@ -33,6 +33,16 @@
 \colorlet{event}{ua-red}
 \colorlet{time}{ua-blue}
 \colorlet{partialtime}{time!50!white}
+
+\tikzset{
+  hid/.style 2 args={
+    rectangle split,
+    rectangle split horizontal,
+    draw=#2,
+    rectangle split parts=#1,
+    fill=#2!40,
+    outer sep=1mm},
+}
 
 \mode<presentation>{
 \usetheme{Madrid}
@@ -344,10 +354,7 @@ Humans understand such times:\\[0.5\baselineskip]
 \end{tabular}
 \end{frame}
 
-\begin{frame}{Semantically compositional time annotation}
-\alert{SCATE \smallcite{bethard-etal:2016:LREC} \hfill \only<2->{Human agreement: 0.82}}
-
-\bigskip
+\begin{frame}{Semantically compositional time annotation}{\subtitlecite{bethard-etal:2016:LREC}}
 Annotate formally-defined, semantically-compositional time operators:
 
 \bigskip
@@ -369,9 +376,177 @@ Annotate formally-defined, semantically-compositional time operators:
 \AnnotateLink{out=60, in=120}{ex-mafnj-and.text east}{ex-mafnj-fridays.north}
 \AnnotateLink{out=60, in=120}{ex-mafnj-next.text east}{ex-mafnj-january.north}
 \end{tikzpicture}
+
+\bigskip
+\pause
+Temporal logic composes operators to yield timeline intervals:
+
+\smallskip
+$\vphantom{\left(\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{2}{12}
+\tikztimelineinterval{1+0/12}{1+1/12}{2}{}
+\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
+\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
+\end{tikzpicture}}\right)}
+\alt<6->%
+% Intersection(Union(Mondays, Fridays), Next(DocTime, January)) as timeline
+{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{6}{7}
+\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
+\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
+\tikztimelineinterval{2+1/7}{2+2/7}{2}{}
+\tikztimelineinterval{2+5/7}{2+6/7}{2}{}
+\tikztimelineinterval{3+1/7}{3+2/7}{2}{}
+\tikztimelineinterval{3+5/7}{3+6/7}{2}{}
+\tikztimelineinterval{4+1/7}{4+2/7}{2}{}
+\tikztimelineinterval{4+5/7}{4+6/7}{2}{}
+\tikztimelineinterval[draw=partialtime,text=white]{1+0/7}{5+3/7}{-0.5}{\tiny\textbf{January 2025}}
+\end{tikzpicture}}}
+{\alt<2->%
+% Intersection(Union(Mondays, Fridays), Next(DocTime, January)) as operators
+{\operatorname{Intersection}\left(
+\alt<4->%
+% Union(Mondays, Fridays) as timeline
+{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{2}{7}
+\tikztimelineinterval{0+1/7}{0+2/7}{2}{}
+\tikztimelineinterval{0+5/7}{0+6/7}{2}{}
+\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
+\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
+\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny W1}
+\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny W2}
+\end{tikzpicture}}}
+% Union(Mondays, Fridays) as operator
+{\operatorname{Union}\left(
+\alt<3->%
+% Mondays as timeline
+{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{2}{7}
+\tikztimelineinterval{0+1/7}{0+2/7}{2}{}
+\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
+\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny W1}
+\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny W2}
+\end{tikzpicture}}}
+% Mondays as text
+{Mondays},
+\alt<3->%
+% Fridays as timeline
+{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{2}{7}
+\tikztimelineinterval{0+5/7}{0+6/7}{2}{}
+\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
+\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny W1}
+\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny W2}
+\end{tikzpicture}}}
+% Fridays as text
+{Fridays}
+\right)},
+\alt<5->%
+% Next(DocTime, January) as timeline
+{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{2}{12}
+\tikztimelineinterval{1+0/12}{1+1/12}{2}{}
+\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
+\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
+\end{tikzpicture}}}
+% Next(DocTime, January) as operator
+{\operatorname{Next}\left(
+\alt<3->%
+% DocTime as timeline
+{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{2}{12}
+\tikztimelineinterval[draw=event]{0+2/24}{0+3/24}{2}{} % bigger than 1/365 to be visible
+\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
+\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
+\end{tikzpicture}}}
+% DocTime as operator
+{\operatorname{DocTime}},
+\alt<3->{%
+% January as timeline
+\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
+\tikztimeline{2}{12}
+\tikztimelineinterval{0+0/12}{0+1/12}{2}{}
+\tikztimelineinterval{1+0/12}{1+1/12}{2}{}
+\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
+\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
+\end{tikzpicture}}}
+% January as text
+{January}
+\right)}
+\right)}
+% Intersection(Union(Mondays, Fridays), Next(DocTime, January)) as text
+{}}
+$
 \end{frame}
 
-\begin{frame}{Neural networks for time normalization}
+\begin{frame}{Neural networks for time normalization}{\subtitlecite{xu-laparra-bethard:2019:S19-1}}
+\begin{tikzpicture}[
+  scale=0.79, every node/.style={scale=0.79},
+  brace/.style={draw,thick,decoration=brace,decorate}]
+  \pgfmathsetmacro{\width}{3.6}
+  \pgfmathsetmacro{\height}{1.1}
+
+  \node (1s-i0) at (0.7, 0*\height) {Input};
+  \node (1s-fv0) at (0.7, 1*\height) {Feature};
+  \node (1s-cv0) at (0.7, 2*\height) {Embed};
+  \node (1s-g10) at (0.7, 3*\height) {Bi-GRU};
+  \node (1s-g20) at (0.7, 4*\height) {Bi-GRU};
+  \node (1s-s0) at (0.7, 5*\height) {Sigmoid};
+  \node (1s-o0) at (0.7, 6.25*\height) {Output};
+
+\foreach \c/\f/\g/\h/\o [count=\step from 1] in {M/M/Lu/NNP/{B-DayOfWeek},o/o/Ll/NNP/{I-DayOfWeek},n/n/Ll/NNP/{I-DayOfWeek},d/d/Ll/NNP/{I-DayOfWeek},\ldots} {
+    % input character
+    \ifdefstring{\c}{\ldots}{
+      \node (1s-i\step) at (\step*\width-0.2*\width, 0*\height) {\vphantom{My}\c};
+      \node (1s-fv\step) at (\step*\width-0.2*\width, 2*\height) {\ldots};
+      \node (1s-g1\step) at (\step*\width-0.2*\width, 3*\height) {\ldots};
+      \node (1s-g2\step) at (\step*\width-0.2*\width, 4*\height) {\ldots};
+      \node (1s-s\step) at (\step*\width-0.2*\width, 5*\height) {\ldots};
+      \node (1s-o\step) at (\step*\width-0.2*\width, 6.25*\height) {\ldots};
+    }{
+      \node[font=\itshape] (1s-i\step) at (\step*\width, 0*\height) {\vphantom{My}\c};
+      \node[text={ua-red}] (1s-f1\step) at (\step*\width-0.3*\width, 1*\height) {\vphantom{My}\f};
+      \node[text={ua-blue}] (1s-f2\step) at (\step*\width, 1*\height) {\vphantom{My}\g};
+      \node[text={green!50!black}] (1s-f3\step) at (\step*\width+0.3*\width, 1*\height) {\vphantom{My}\h};
+      \node[hid={2}{ua-red}] (1s-fv1\step) at (\step*\width-0.3*\width, 2*\height) {};
+      \node[hid={2}{ua-blue}] (1s-fv2\step) at (\step*\width, 2*\height) {};
+      \node[hid={2}{green!50!black}] (1s-fv3\step) at (\step*\width+0.3*\width, 2*\height) {};
+      \node[hid={3}{ua-red!50!ua-blue}] (1s-g1\step) at (\step*\width, 3*\height) {};
+      \node[hid={3}{ua-red!50!ua-blue}] (1s-g2\step) at (\step*\width, 4*\height) {};
+      \node[hid={2}{ua-red!25!ua-blue}] (1s-s\step) at (\step*\width, 5*\height) {};
+      \node[align=center,font=\scshape] (1s-o\step) at (\step*\width, 6.25*\height) {\o};
+      \draw[->] (1s-i\step.north) -> (1s-f1\step.south);
+      \draw[->] (1s-i\step.north) -> (1s-f2\step.south);
+      \draw[->] (1s-i\step.north) -> (1s-f3\step.south);
+      \draw[->] (1s-f1\step.north) -> (1s-fv1\step.south);
+      \draw[->] (1s-f2\step.north) -> (1s-fv2\step.south);
+      \draw[->] (1s-f3\step.north) -> (1s-fv3\step.south);
+      \draw[->] (\step*\width, 2.3*\height) -> (1s-g1\step.south);
+      \draw[->] (1s-g1\step.north) -> (1s-g2\step.south);
+      \draw[->] (1s-g2\step.north) -> (1s-s\step.south);
+      \draw[->] (1s-s\step.north) -> (1s-o\step.south);
+    }
+    % recurrent links
+    \ifdefstring{\step}{1}{}{
+      \pgfmathtruncatemacro{\last}{add(\step,-1)}
+      \draw[<->] (1s-g1\last.east) -> (1s-g1\step.west);
+      \draw[<->] (1s-g2\last.east) -> (1s-g2\step.west);
+    }
+  }
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Neural networks for time normalization}{\subtitlecite{xu-laparra-bethard:2019:S19-1}}
+\begin{tabular}{ l c c }
+\toprule
+& TempEval 2013 & THYME \\
+Model & (News) $F_1$ & (Clinical) $F_1$ \\
+\midrule
+HeidelTime (grammar) & 74 & 70 \\
+\AtNextCite{\defcounter{maxnames}{1}}\cite{laparra-xu-bethard:2018:TACL} & 77 &  76 \\
++ pre-trained character representations & 82 & 86 \\
+\bottomrule
+\end{tabular}
 \end{frame}
 
 \section{Pre-training neural networks on structure}
