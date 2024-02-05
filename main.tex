@@ -1,0 +1,536 @@
+% !TEX TS-program = pdflatexmk
+
+\documentclass[14pt,aspectratio=169]{beamer}
+\usepackage{newtxtext,newtxmath}
+\usepackage{microtype}
+\usepackage[english]{babel}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{fit}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
+\usetikzlibrary{shapes.multipart}
+\usetikzlibrary{calc}
+\usetikzlibrary{tikzmark}
+\usepackage{forest}
+\usepackage[style=authoryear,maxbibnames=99,sorting=nyt,backend=biber]{biblatex}
+\AtEveryBibitem{\clearfield{note}}
+
+
+\addbibresource{bethard.bib}
+\addbibresource{extra.bib}
+\renewcommand*{\bibfont}{\scriptsize}
+\newcommand{\smallcite}[1]{{\scriptsize\parencite{#1}}}
+
+% Define UA colors
+% https://brand.arizona.edu/applying-the-brand/colors
+\definecolor{ua-red}{HTML}{AB0520}
+\definecolor{ua-blue}{HTML}{0C234B}
+\definecolor{ua-oasis}{HTML}{378DBD}
+\definecolor{geonames-blue}{HTML}{5c9bcc}
+\colorlet{event}{ua-red}
+\colorlet{time}{ua-blue}
+\colorlet{partialtime}{time!50!white}
+
+\mode<presentation>{
+\usetheme{Madrid}
+\usecolortheme[named=ua-red]{structure}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{section in toc}[square]
+\setbeamertemplate{subsection in toc}[square]
+\setbeamertemplate{items}[square]
+}
+
+\AtBeginSection[]{
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+  \end{frame}
+}
+
+% smaller than \strut, but ensures a constant height
+\newcommand{\fullheight}{\vphantom{(p}}
+
+\newcommand{\raisegraphics}[3]{\raisebox{-#1\height}{\includegraphics[#2]{#3}}}
+\newcommand{\funding}[2]{\raisegraphics{.2}{height=.05\textheight}{#1} #2}
+
+
+% command for annotating words in text
+% #1: drawing options
+% #2: name of entire shape
+% #3: number of parts
+% #4: name of baseline part
+% #5: annotation type
+% #6: node text following \nodepart{two}
+\newcommand{\annotate}[6][]{%
+\tikz[remember picture,baseline={(#2.#4)}]{%
+\node[
+  rectangle split,
+  rectangle split parts=#3,
+  thick,
+  inner sep=2pt,
+  align=center,
+  draw=event,
+  #1]%
+(#2)
+{%
+\scriptsize\fullheight\textsc{#5}%
+\nodepart{two}%
+#6%
+\fullheight};}}
+
+% short commands for annotations of various sizes
+\newcommand{\AnnotateOne}[3][]{%
+  \tikz[remember picture,baseline={(#2.base)}]{%
+    \node[draw,inner sep=2pt,#1] (#2) {#3\strut};%
+  }%
+}
+\newcommand{\AnnotateTwo}[4][]{\annotate[#1]{#2}{2}{two}{#3}{#4}}
+\newcommand{\AnnotateThree}[5][]{\annotate[#1]{#2}{3}{three}{#3}{%
+\scriptsize\fullheight\textsc{#4}%
+\nodepart{three}%
+#5}}
+\newcommand{\AnnotateFour}[6][]{\annotate[#1]{#2}{4}{four}{#3}{%
+\scriptsize\fullheight\textsc{#4}%
+\nodepart{three}%
+\scriptsize\fullheight\textsc{#5}%
+\nodepart{four}%
+#6}}
+\newcommand{\AnnotateFive}[7][]{\annotate[#1]{#2}{5}{five}{#3}{%
+\scriptsize\fullheight\textsc{#4}%
+\nodepart{three}%
+\scriptsize\fullheight\textsc{#5}%
+\nodepart{four}%
+\scriptsize\fullheight\textsc{#6}%
+\nodepart{five}%
+#7}}
+\newcommand{\AnnotateSix}[8][]{\annotate[#1]{#2}{6}{six}{#3}{%
+\scriptsize\fullheight\textsc{#4}%
+\nodepart{three}%
+\scriptsize\fullheight\textsc{#5}%
+\nodepart{four}%
+\scriptsize\fullheight\textsc{#6}%
+\nodepart{five}%
+\scriptsize\fullheight\textsc{#7}%
+\nodepart{six}%
+#8}}
+
+
+% command for adding links
+% #1: drawing options (typically, the color)
+% #2: edge options (typically out=NN, in=NN)
+% #3: start anchor for arrow
+% #4: end anchor for arrow
+\newcommand{\AnnotateLink}[4][]{%
+\path[color=time,thick,->,#1] (#3) node [circle,color=time,fill,inner sep=0.25ex,#1] {} edge[#2] (#4);}
+
+
+% command for drawing a timeline
+% #1: drawing options
+% #2: number of primary intervals
+% #3: number of secondary intervals per primary interval
+\newcommand{\tikztimeline}[3][]{%
+\pgfmathsetmacro{\primaryend}{#2-1}
+\pgfmathsetmacro{\secondaryend}{#3-1}
+% horizontal line
+\draw[#1,dashed] (-0.33,0) -- (0,0);
+\draw[#1] (0,0) -- (#2,0);
+\draw[#1,dashed,-latex] (#2,0) -- (#2 + 0.33,0);
+% primary ticks
+\foreach \primary  in {0,...,\primaryend} {%
+  \draw[#1] (\primary,0) -- (\primary,\normalbaselineskip);
+  % secondary ticks
+  \foreach \secondary [evaluate=\secondary] in {\primary+1/#3,\primary+.../#3,\primary+\secondaryend/#3} {
+    \draw[#1] (\secondary,0) -- (\secondary,0.5\normalbaselineskip);
+  }
+}
+\draw[#1] (#2,0) -- (#2,\normalbaselineskip);
+}
+
+% command for drawing a interval on a timeline
+% #1: drawing options
+% #2: start time (i.e., start x position)
+% #3: end time (i.e., start x position)
+% #4: vertical tier (i.e., y position)
+% #5: text
+\newcommand{\tikztimelineinterval}[5][]{%
+\draw[line width=0.9\normalbaselineskip,draw=time,text=white,#1] (#2, #4\normalbaselineskip) -- (#3, #4\normalbaselineskip) node[midway,font=\footnotesize] {#5};
+}
+
+% short command for drawing an interval the width of a single primary interval
+\newcommand{\tikztimelineprimaryinterval}[4][]{\tikztimelineinterval[#1]{#2}{#2+1}{#3}{#4}}
+
+\author[Bethard]{Dr. Steven Bethard}
+\institute[Arizona]{%
+School of Information\\
+University of Arizona}
+
+\title{Mapping Text to Structured Representations}
+\date[]{13 Mar 2024}
+
+\begin{document}
+
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{My natural language processing research interests}
+\begin{itemize}
+\item Modeling the language of time and timelines \\
+{\footnotesize Funded by:
+\funding{funding/nih_nlm.png}{R01LM010090}
+\quad\funding{funding/darpa.png}{W911NF-18-1-0014}}
+\begin{itemize}
+% image generated from https://demo.mobiscroll.com/jquery/calendar/multiple-select
+\item E.g., \textit{six days ago} $\Rightarrow$ \raisegraphics{.4}{height=.15\textheight}{calendar/2024-02-07.png}
+\end{itemize}
+
+\bigskip
+\item Normalizing text to medical and geospatial ontologies \\
+{\footnotesize Funded by:
+\funding{funding/nih_nigms.jpg}{R01GM114355}
+\quad\funding{funding/nsf.png}{1831551}}
+\begin{itemize}
+\item E.g., \textit{Boulder} $\Rightarrow$ \raisegraphics{.4}{height=.15\textheight}{geonames/BoulderUSCOP.png}
+\end{itemize}
+
+\bigskip
+\item Adapting machine learning models to medical and clinical domains \\
+{\footnotesize Funded by:
+\funding{funding/nih_nlm.png}{R01LM012918}
+\quad\funding{funding/nih_nci.jpg}{R21CA256680}}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Outline}
+    \tableofcontents
+\end{frame}
+
+\section{Designing structured outputs for machine learning}
+
+\subsection{Introduction to time normalization}
+
+\begin{frame}{Time normalization: task definition}
+
+\begin{tabular}{l c c c c}
+\textbf{Expression} & & \textbf{ISO-TimeML} & & \textbf{Calendar} \\
+
+\textit{December 5, 2007} & $\Rightarrow$ & 2007-12-05 & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2007-12-05.png} \\ \\
+
+\textit{the day before yesterday} & $\Rightarrow$ & 2024-02-07 & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2024-02-07.png} \\ \\
+
+\textit{the week of March 6} & $\Rightarrow$ & 2024-W10 & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2024-W10.png} \\ \\
+
+\textit{Fridays in January} & $\Rightarrow$ & ???? & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2024-01-FR.png}
+
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}{Time normalization $<$ 2018: hand-crafted rules}
+\centering
+the week of March 6
+
+$\Downarrow$
+
+\begin{columns}
+\begin{column}{0.4\textwidth}
+\footnotesize
+$\begin{array}{l}
+\textsc{Unit} \Rightarrow \\
+\quad \textit{week} \textit{ / } \\
+\quad \textsc{Weeks} \\
+\textsc{Month} \Rightarrow \\
+\quad \textit{March} \textit{ / } \\
+\quad \textsc{MonthOfYear}=3 \\
+\textsc{TimeSpan} \Rightarrow \\
+\quad \textsc{Unit} \textit{ of } \textsc{TimeSpan} \textit{ / } \\
+\quad \textsc{FindEnclosing}\ \textsc{TimeSpan}\ \textsc{Unit} \\
+\ldots
+\end{array}$
+\end{column}
+\begin{column}{0.55\textwidth}
+\footnotesize
+\begin{forest}
+    [\textsc{TimeSpan}
+        [\textsc{FindEnclosing}]
+        [\textsc{TimeSpan}
+            [\textsc{FindEarlier}]
+            [\textsc{Present}]
+            [\textsc{Field}
+                [\textsc{Field:Month}
+                    [\textsc{MonthOfYear}]
+                    [3] ]
+                [\textsc{Field:Day}
+                    [\textsc{DayOfMonth}]
+                    %[\nonterm{Int:1-31}
+                        [6] ] ] ]% ]
+        [\textsc{Unit}
+            [{\textsc{Weeks}}] ] ]
+\end{forest}
+\end{column}
+\end{columns}
+
+$\Downarrow$
+
+2024-W10
+\end{frame}
+
+\subsection{Time normalization as text-to-structure}
+
+\begin{frame}{Semantically compositional time annotation}
+Problem: ISO-TimeML can't represent times that:
+\begin{itemize}
+\item don't align to exactly 1 calendar unit, e.g., \textit{the past 2 summers}
+\item are relative to events, e.g., \textit{5 days postop}
+\item are unions of other times, e.g, \textit{Mondays and Fridays}
+\end{itemize}
+\pause
+\bigskip
+Humans understand such times:\\[0.5\baselineskip]
+\begin{tabular}{ c c c }
+\visible<3->{\it the past 2 summers} &
+\visible<7->{\it 5 days postop} &
+\visible<11->{\it Mondays and Fridays} \\
+\visible<4->{%
+\begin{tikzpicture}
+\tikztimeline{3}{12}
+\only<5->{%
+\tikztimelineinterval[draw=event]{3+30/365}{3+40/365}{2}{}} % more than 1/365 just so it's visible
+\only<6->{%
+\tikztimelineinterval{1+5/12}{1+8/12}{2}{}
+\tikztimelineinterval{2+5/12}{2+8/12}{2}{}}
+\end{tikzpicture}}
+&
+\visible<8->{%
+\begin{tikzpicture}
+\tikztimeline{2}{7}
+\only<9->{%
+\tikztimelineinterval[draw=event]{6/7}{7/7}{2}{}}
+\only<10->{%
+\tikztimelineinterval{11/7}{12/7}{2}{}}
+\end{tikzpicture}}
+&
+\visible<12->{%
+\begin{tikzpicture}
+\tikztimeline{3}{7}
+\tikztimelineinterval[draw=white]{0}{0}{4}{}% to ensure full vertical space when others are not shown
+\only<13->{%
+\tikztimelineinterval[draw=partialtime]{0+1/7}{0+2/7}{4}{}
+\tikztimelineinterval[draw=partialtime]{1+1/7}{1+2/7}{4}{}
+\tikztimelineinterval[draw=partialtime]{2+1/7}{2+2/7}{4}{}}
+\only<14->{%
+\tikztimelineinterval[draw=partialtime]{0+5/7}{0+6/7}{3}{}
+\tikztimelineinterval[draw=partialtime]{1+5/7}{1+6/7}{3}{}
+\tikztimelineinterval[draw=partialtime]{2+5/7}{2+6/7}{3}{}}
+\only<15>{%
+\tikztimelineinterval{0+1/7}{0+2/7}{2}{}
+\tikztimelineinterval{0+5/7}{0+6/7}{2}{}
+\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
+\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
+\tikztimelineinterval{2+1/7}{2+2/7}{2}{}
+\tikztimelineinterval{2+5/7}{2+6/7}{2}{}}
+\end{tikzpicture}}
+\end{tabular}
+\end{frame}
+
+\begin{frame}{Semantically compositional time annotation}
+\alert{SCATE \smallcite{bethard-etal:2016:LREC} \hfill \only<2->{Human agreement: 0.82}}
+
+\bigskip
+Annotate formally-defined, semantically-compositional time operators:
+
+\bigskip
+\AnnotateThree[draw=time]{ex-mafnj-mondays}{Day-Of-Week}{Type=Monday}{Mondays}
+\hspace{0.5em}
+\AnnotateTwo[draw=time]{ex-mafnj-intersection}{Intersection}{%
+\\[\baselineskip]
+\AnnotateTwo[draw=time]{ex-mafnj-and}{Union}{and}}
+\hspace{0.5em}
+\AnnotateThree[draw=time]{ex-mafnj-fridays}{Day-Of-Week}{Type=Friday}{Fridays}
+\hspace{0.5em}
+\AnnotateThree[draw=time]{ex-mafnj-next}{Next}{Interval=DocTime}{next}
+\hspace{0.5em}
+\AnnotateThree[draw=time]{ex-mafnj-january}{Month-Of-Year}{Type=January}{January}
+\begin{tikzpicture}[remember picture,overlay]%
+\AnnotateLink{out=0, in=120}{ex-mafnj-intersection.text east}{ex-mafnj-next.north}
+\AnnotateLink{out=270, in=90}{ex-mafnj-intersection.text split}{ex-mafnj-and.north}
+\AnnotateLink{out=120, in=60}{ex-mafnj-and.text west}{ex-mafnj-mondays.north}
+\AnnotateLink{out=60, in=120}{ex-mafnj-and.text east}{ex-mafnj-fridays.north}
+\AnnotateLink{out=60, in=120}{ex-mafnj-next.text east}{ex-mafnj-january.north}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Neural networks for time normalization}
+\end{frame}
+
+\section{Pre-training neural networks on structure}
+
+\subsection{Introduction to medical concept normalization}
+
+\begin{frame}{Concept normalization $<$ 2021: retrieve + rerank}
+\end{frame}
+
+
+\subsection{Pre-training on medical ontologies}
+
+\section{Prompting models to reveal structural constraints}
+
+\subsection{Introduction to toponym resolution}
+
+\begin{frame}{Toponym resolution: text locations $\Rightarrow$ map locations}
+\centering
+\textit{\AnnotateOne{sj}{San Jose} is the largest city in Northern California.}
+
+\vspace{0.15\textheight}
+\begin{tikzpicture}[remember picture]
+\node (sj-cr) at (-3.5, 0) {\includegraphics[width=0.65\textheight]{san-jose-costa-rica.png}};
+\node (sj-us) at (+3.5, 0) {\includegraphics[width=0.65\textheight]{san-jose-california.png}};
+\end{tikzpicture}
+\begin{tikzpicture}[remember picture,overlay]%
+\draw[-latex, ultra thick] (sj.south) -- node[red] {\Huge $\times$} (sj-cr.north);
+\draw[-latex, ultra thick] (sj.south) -- (sj-us.north);
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{Toponym resolution $<$ 2023: retrieve + classify}
+\begin{tikzpicture}[
+  model/.style={draw, fill=black!25, align=center, inner sep=5pt},
+  geoentry/.style={inner sep=1pt, text width=0.22\linewidth, align=center},
+  textforentry/.style={fill=white, inner sep=1pt, text width=0.22\linewidth, align=left},
+  font=\scriptsize,
+  remember picture
+]
+\node[draw, text width=.95\linewidth, align=left, text=ua-red] (text) at (0, 0) {It’s a northeast Texas thing, not just a \subnode[inner sep=0pt]{mention}{\fbox{Paris}} thing\ldots Dallas media stations reported the same message as a hoax\ldots};
+
+\node[model, text width=.75\linewidth] (geonames) at (0, -1) {Index (Lucene over GeoNames)}
+edge[latex-] (mention.south);
+\foreach \prediction/\png/\entry [count=\n from 0] in {
+    % https://www.geonames.org/2988507/paris.html
+    0/ParisFR11P.png/Paris [SEP] FR,
+    % https://www.geonames.org/4717560/paris.html
+    \fbox{1}/ParisUSTXP.png/Paris [SEP] US,
+    % https://www.geonames.org/7174050/city-of-paris.html
+    0/ParisUSTXA.png/City of Paris [SEP] US,
+    % https://www.geonames.org/6942553/paris.html
+    0/ParisCA08P.png/Paris [SEP] CA} {
+    \node[draw, geoentry] (entry\n) at (-5.4 + 3.6*\n, -2.25) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/\png}};
+    \node[draw, textforentry, below=0.25cm of entry\n.south] (transformerin\n) {[CLS] \textcolor{geonames-blue}{\entry\ldots}\ [SEP] \textcolor{ua-red}{Paris [SEP] It's a northeast Texas\ldots}};
+    \node[below=1.5cm of transformerin\n.south] (prediction\n) {\strut\prediction};    
+    \draw[-latex] (geonames.south) to (entry\n.north);
+    \draw[-latex] (entry\n.south) to (transformerin\n.north);
+    \draw[-latex] (transformerin\n.south) to (prediction\n.north);
+}
+\node[model, text width=.75\linewidth] (transformer) at (0, -4.5) {Classifier (Transformer Network)};
+\end{tikzpicture}
+\end{frame}
+
+
+\subsection{Predicting geographic attributes to constrain search}
+
+\begin{frame}{New Paradigm: classify text + filter entries}
+\begin{tikzpicture}[
+  model/.style={draw, text width=.45\linewidth, fill=black!25, align=center, inner sep=5pt},
+  geoentry/.style={inner sep=0pt, text width=0.35\linewidth, align=center},
+  textforentry/.style={fill=white, inner sep=1pt, text width=0.45\linewidth, align=left},
+  font=\scriptsize,
+  remember picture
+]
+\node[draw, text width=.95\linewidth, align=left, text=ua-red] (text) at (0, 0) {It’s a northeast Texas thing, not just a \subnode[inner sep=1pt]{mention2}{\fbox{Paris}} thing\ldots Dallas media stations reported the same message as a hoax\ldots};
+
+\node[model] (geonames) at (-4, -1) {Index (Lucene over GeoNames)}
+edge[latex-] (mention2.south);
+
+\node[model] (filter) at (-4, -5) {Filter};
+
+\foreach \png [count=\n from 0] in {
+    % https://www.geonames.org/2988507/paris.html
+    ParisFR11P.png,
+    % https://www.geonames.org/4717560/paris.html
+    ParisUSTXP.png,
+    % https://www.geonames.org/7174050/city-of-paris.html
+    ParisUSTXA.png,
+    % https://www.geonames.org/6942553/paris.html
+    ParisCA08P.png} {
+    \node[draw, geoentry] (entry\n) at (-4.75 + 0.5*\n, -2.25 - 0.5*\n) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/\png}} edge[latex-] (geonames) edge[-latex] (filter);
+}
+
+\node[draw, textforentry] (transformerin) at (+4, -1.25) {%
+[CLS] This document discusses these location mentions: \\
+\textcolor{ua-red}{Texas}, \textcolor{ua-red}{Paris}, \textcolor{ua-red}{Dallas} in which \textcolor{ua-red}{Paris} \\
+is
+\subnode[inner sep=0pt]{feature-mask}{[MASK]}
+located in
+\subnode[inner sep=0pt]{state-mask}{[MASK]}
+of
+\subnode[inner sep=0pt]{country-mask}{[MASK]}
+[SEP]} edge[latex-] (text.south);
+
+\node[below=1.5cm of feature-mask] (feature) {P} edge[latex-] (feature-mask.south);
+\node[below=1.5cm of state-mask] (state) {Texas} edge[latex-] (state-mask.south);
+\node[below=1.5cm of country-mask] (country) {United States} edge[latex-] (country-mask.south);
+
+\node[model] (classifier) at (+4, -2.5) {Classifier (Transformer Network)};
+
+\draw[-latex, bend left] (feature.south) to (filter.east);
+\draw[-latex, bend left] (state.south) to (filter.east);
+\draw[-latex, bend left] (country.south) to (filter.east);
+
+\node[below=0.5cm of filter, draw, geoentry] (entry) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/ParisUSTXP.png}} edge[latex-] (filter.south);
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Results: classify text + filter $\geq$ classify entries}
+\centering
+\begin{tabular}{l l c c c}
+\toprule
+& & \multicolumn{3}{c}{Dataset Accuracy} \\
+\cmidrule(lr){3-5}
+Model & Classifier input & LGL & GWN & TRN \\
+\midrule
+\cite{ayoola-etal-2022-refined} & text + entries & .786 & .782 & .858 \\
+\cite{zhang-bethard-2023-improving} & text + entries & .807 & \textbf{.828} & .918 \\
+GeoPLACE (ours) & text & \textbf{.863} & .822 & \textbf{.947} \\
+% TODO: add citations
+\bottomrule
+\end{tabular}
+\end{frame}
+
+
+\section{Ongoing and future work}
+
+\begin{frame}{Time normalization as code generation}
+Seq-to-seq framing
+
+Constrained decoding
+\end{frame}
+
+
+\begin{frame}{Geographic normalization as text to polygon}
+Defining geographic operators
+
+Constrained decoding
+
+Alternative: pixel-wise prediction
+\end{frame}
+
+
+\appendix
+
+\begin{frame}[allowframebreaks]{References}
+\printbibliography
+\end{frame}
+
+
+\end{document}
