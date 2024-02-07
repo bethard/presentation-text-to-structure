@@ -581,11 +581,32 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 \end{frame}
 
 \begin{frame}{Concept normalization $<$ 2021: retrieve + rerank}
+\begin{tikzpicture}[font=\small, inner sep=2pt, model/.style={draw, fill=black!25, align=center, inner sep=5pt}]
+\pgfmathsetseed{42}
+\pgfmathsetmacro{\height}{1.1}
+\pgfmathsetmacro{\width}{3}
+
+\node[ua-red] at (0, \height) {\large Text};
+\node[ua-oasis] at (2*\width, \height) {\large Candidate};
+\node[ua-oasis] at (4*\width, \height) {\large Prediction};
+
+\node[ua-red, align=center] (text) at (0, 0) {head was \\ spinning \\ a little};
+\node[model] (umls) at (\width, -1.5*\height) {Information \\ Retrieval \\ over \\ UMLS} edge[latex-] (text);
+\node[model] (reranker) at (3*\width, -1.5*\height) {Machine \\ Learning \\ Reranker};
+\foreach[count=\i from 0, count=\slide from 4] \candidate/\prediction in {
+    vertigo\\(C0042571)/dizziness\\(C0012833),
+    spinning gait\\(C0427152)/vertigo\\(C0042571),
+    head\\(C0018670)/head\\(C0018670),
+    dizziness\\(C0012833)/spinning gait\\(C0427152)} {
+  \node[ua-oasis, align=center] (candidate-\i) at (2*\width, -\height*\i) {\candidate} edge[latex-] (umls) edge[-latex] (reranker);
+  \node[ua-oasis, align=center] (prediction-\i) at (4*\width, -\height*\i) {\prediction} edge[latex-] (reranker);
+}
+\end{tikzpicture}
 \end{frame}
 
 
 \begin{frame}{Concept normalization as vector-space search}
-\begin{tikzpicture}[font=\small, inner sep=2pt, anchor=west]
+\begin{tikzpicture}[font=\small, inner sep=2pt]
 \pgfmathsetseed{42}
 \pgfmathsetmacro{\height}{1.1}
 \pgfmathsetmacro{\width}{3}
@@ -595,7 +616,7 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 \node[ua-oasis] at (4*\width, \height) {\large UMLS};
 
 \node[align=center,ua-red] (text) at (0, 0) {head was \\ spinning \\ a little};
-\node<2->[ua-red] (text-vec) at (.8*\width, 0) {\small[8.2 0.4 \ldots]}
+\node<2->[ua-red] (text-vec) at (\width, 0) {\small[8.2 0.4 \ldots]}
   edge[ua-red, ultra thick, latex-] (text);
 \foreach[count=\i from 0, count=\slide from 4] \term/\vec/\score in {
     vertigo\\(C0042571)/[7.4 1.2 \ldots]/0.6,
@@ -605,7 +626,7 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
   \node[ua-oasis, align=center] (umls-\i) at (4*\width, -\height*\i) {\term};
   \node<3->[ua-oasis] (umls-vec-\i) at (3*\width, -\height*\i) {\vec}
     edge[ua-oasis, ultra thick, latex-] (umls-\i);
-  \node<\slide-> (score-\i) at (2.2*\width, -\height*\i) {\score}
+  \node<\slide-> (score-\i) at (2*\width, -\height*\i) {\score}
     edge[ua-oasis, ultra thick, latex-] (umls-vec-\i);
   \draw<\slide->[ua-red, ultra thick, -latex] (text-vec.east) -- (score-\i.west);
 }
