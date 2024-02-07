@@ -644,7 +644,7 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 \begin{tikzpicture}[font=\small, text only/.style={inner sep=2pt, align=center}]
 \pgfmathsetmacro{\height}{1.4}
 \pgfmathsetmacro{\width}{1}
-\node[draw, cylinder, shape border rotate=90, shape aspect=.25, align=center]
+\node[draw, fill=ua-oasis, cylinder, shape border rotate=90, shape aspect=.25, align=center]
   (umls)
   at (-8*\width, .15*\height)
   {UMLS};
@@ -653,9 +653,9 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
   at (0, 2.2*\height)
   {$L = \ln{(1 + e^{Sim(V(t_i), V(t_{n})) - Sim(V(t_i), V(t_{p}))} )})$};
 \foreach \i/\name/\textcolor/\phrase in {
-    -4/p/ua-red/heart\\attack,
-    0/i/ua-red!50!ua-blue/myocardial\\infarction,
-    4/n/ua-blue/cardiovascular\\infections} {
+    -4/p/black/heart\\attack,
+    0/i/ua-red/myocardial\\infarction,
+    4/n/black/cardiovascular\\infections} {
   \node[text only, text=\textcolor]
     (input-\name)
     at (\i*\width, 0)
