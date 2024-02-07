@@ -588,18 +588,21 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 
 \node[ua-red] at (0, \height) {\large Text};
 \node[ua-oasis] at (2*\width, \height) {\large Candidate};
-\node[ua-oasis] at (4*\width, \height) {\large Prediction};
+\node<2->[ua-oasis] at (4*\width, \height) {\large Prediction};
 
 \node[ua-red, align=center] (text) at (0, 0) {head was \\ spinning \\ a little};
 \node[model] (umls) at (\width, -1.5*\height) {Information \\ Retrieval \\ over \\ UMLS} edge[latex-] (text);
-\node[model] (reranker) at (3*\width, -1.5*\height) {Machine \\ Learning \\ Reranker};
+\node<2->[model] (reranker) at (3*\width, -1.5*\height) {Machine \\ Learning \\ Reranker};
 \foreach[count=\i from 0, count=\slide from 4] \candidate/\prediction in {
     vertigo\\(C0042571)/dizziness\\(C0012833),
     spinning gait\\(C0427152)/vertigo\\(C0042571),
     head\\(C0018670)/head\\(C0018670),
     dizziness\\(C0012833)/spinning gait\\(C0427152)} {
-  \node[ua-oasis, align=center] (candidate-\i) at (2*\width, -\height*\i) {\candidate} edge[latex-] (umls) edge[-latex] (reranker);
-  \node[ua-oasis, align=center] (prediction-\i) at (4*\width, -\height*\i) {\prediction} edge[latex-] (reranker);
+  \node[ua-oasis, align=center] (candidate-\i) at (2*\width, -\height*\i) {\candidate};
+  \draw[-latex] (umls) -- (candidate-\i);
+  \draw<2->[-latex] (candidate-\i) -- (reranker);
+  \node<2->[ua-oasis, align=center] (prediction-\i) at (4*\width, -\height*\i) {\prediction} edge[latex-] (reranker);
+  \draw<2->[-latex] (reranker) -- (prediction-\i);
 }
 \end{tikzpicture}
 \end{frame}
