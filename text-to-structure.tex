@@ -479,7 +479,7 @@ $\vphantom{\left(\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bound
 $
 \end{frame}
 
-\begin{frame}{Neural networks for time normalization}{\subtitlecite{xu-laparra-bethard:2019:S19-1}}
+\begin{frame}{Neural networks for time normalization}{\subtitlecite{laparra-xu-bethard:2018:TACL,xu-laparra-bethard:2019:S19-1}}
 \begin{tikzpicture}[
   scale=0.79, every node/.style={scale=0.79},
   brace/.style={draw,thick,decoration=brace,decorate}]
@@ -536,24 +536,154 @@ $
 \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Neural networks for time normalization}{\subtitlecite{xu-laparra-bethard:2019:S19-1}}
+\begin{frame}{Structure enables learning for time normalization}{\subtitlecite{laparra-xu-bethard:2018:TACL,xu-laparra-bethard:2019:S19-1}}
 \begin{tabular}{ l c c }
 \toprule
 & TempEval 2013 & THYME \\
 Model & (News) $F_1$ & (Clinical) $F_1$ \\
 \midrule
-HeidelTime (grammar) & 74 & 70 \\
-\AtNextCite{\defcounter{maxnames}{1}}\cite{laparra-xu-bethard:2018:TACL} & 77 &  76 \\
-+ pre-trained character representations & 82 & 86 \\
+HeidelTime (grammar) & \alert<2>{74} & \alert<2>{70} \\
+\cite{laparra-xu-bethard:2018:TACL} & \alert<2-3>{77} &  \alert<2-3>{76} \\
+\cite{xu-laparra-bethard:2019:S19-1} & \alert<3>{82} & \alert<3>{86} \\
 \bottomrule
 \end{tabular}
+
+\bigskip
+Findings:
+\begin{itemize}
+\item<2-> With structured output, machine learning $>$ 10,000+ hand crafted rules
+\item<3-> Pre-training character embeddings further improves models
+\end{itemize}
 \end{frame}
 
 \section{Pre-training neural networks on structure}
 
 \subsection{Introduction to medical concept normalization}
 
+\begin{frame}[t]{Concept normalization: task definition}
+\centering
+I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting}, and my \AnnotateTwo[draw=ua-red]{spinning}{\visible<2->{C0012833}}{head was spinning a little}.
+
+\bigskip
+\only<3->{
+\begin{tikzpicture}[remember picture,overlay]
+\node[anchor=north, inner sep=0pt, below=2em of vomiting.south]
+  (umls-vomiting)
+  {\includegraphics[width=0.35\textwidth]{umls/vomiting.png}}
+  edge[ua-red,ultra thick,dotted,latex-] (vomiting);
+\node[anchor=north, inner sep=0pt, below=2em of spinning.south]
+  (umls-dizziness)
+  {\includegraphics[width=0.35\textwidth]{umls/dizziness.png}}
+  edge[ua-red,ultra thick,dotted,latex-] (spinning);
+\node[draw,fit=(umls-vomiting) (umls-dizziness), inner sep=1em, label=below:{Unified Medical Language System (UMLS)}] {};
+\end{tikzpicture}
+}
+\end{frame}
+
 \begin{frame}{Concept normalization $<$ 2021: retrieve + rerank}
+\end{frame}
+
+
+\begin{frame}{Concept normalization as vector-space search}
+\begin{tikzpicture}[font=\small, inner sep=2pt, anchor=west]
+\pgfmathsetseed{42}
+\pgfmathsetmacro{\height}{1.1}
+\pgfmathsetmacro{\width}{3}
+
+\node[ua-red] at (0, \height) {\large Text};
+\node<4-> at (2*\width, \height) {\large Score};
+\node[ua-oasis] at (4*\width, \height) {\large UMLS};
+
+\node[align=center,ua-red] (text) at (0, 0) {head was \\ spinning \\ a little};
+\node<2->[ua-red] (text-vec) at (.8*\width, 0) {\small[8.2 0.4 \ldots]}
+  edge[ua-red, ultra thick, latex-] (text);
+\foreach[count=\i from 0, count=\slide from 4] \term/\vec/\score in {
+    vertigo\\(C0042571)/[7.4 1.2 \ldots]/0.6,
+    spinning gait\\(C0427152)/[1.2 6.5 \ldots]/0.1,
+    head\\(C0018670)/[2.7 0.4 \ldots]/0.2,
+    dizziness\\(C0012833)/[8.0 0.9 \ldots]/0.8} {
+  \node[ua-oasis, align=center] (umls-\i) at (4*\width, -\height*\i) {\term};
+  \node<3->[ua-oasis] (umls-vec-\i) at (3*\width, -\height*\i) {\vec}
+    edge[ua-oasis, ultra thick, latex-] (umls-\i);
+  \node<\slide-> (score-\i) at (2.2*\width, -\height*\i) {\score}
+    edge[ua-oasis, ultra thick, latex-] (umls-vec-\i);
+  \draw<\slide->[ua-red, ultra thick, -latex] (text-vec.east) -- (score-\i.west);
+}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Training a term-to-vector network from UMLS}{\subtitlecite{xu-bethard-2021-triplet}}
+\begin{enumerate}
+\item Create triplets of input term $t_i$, match term $t_p$, mis-match term $t_n$
+\item Train network so $t_i$ is more similar to $t_p$ than $t_n$
+\end{enumerate}
+
+\pause
+\bigskip
+\begin{tikzpicture}[font=\small, text only/.style={inner sep=2pt, align=center}]
+\pgfmathsetmacro{\height}{1.4}
+\pgfmathsetmacro{\width}{1}
+\node[draw, cylinder, shape border rotate=90, shape aspect=.25, align=center]
+  (umls)
+  at (-8*\width, .15*\height)
+  {UMLS};
+\node[text only]
+  (L)
+  at (0, 2.2*\height)
+  {$L = \ln{(1 + e^{Sim(V(t_i), V(t_{n})) - Sim(V(t_i), V(t_{p}))} )})$};
+\foreach \i/\name/\textcolor/\phrase in {
+    -4/p/ua-red/heart\\attack,
+    0/i/ua-red!50!ua-blue/myocardial\\infarction,
+    4/n/ua-blue/cardiovascular\\infections} {
+  \node[text only, text=\textcolor]
+    (input-\name)
+    at (\i*\width, 0)
+    {$t_{\name}$ \\ \phrase} edge[latex-,bend left] (umls);
+  \node[draw, align=center, fill=yellow, fill opacity=0.5, text opacity=1]
+    (bert-\name)
+    at (\i*\width, 0.95*\height)
+    {PubMed-BERT}
+    edge[latex-] (input-\name);
+  \node[text only,text=\textcolor]
+    (repr-\name)
+    at (\i*\width, 1.6*\height)
+    {$V(t_{\name})$}
+    edge[latex-] (bert-\name)
+    edge[-latex] (L);
+}
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Concept normalization evaluation}{\subtitlecite{xu-bethard-2021-triplet}}
+Evaluation data:
+\begin{description}[NCBI]
+\item[NCBI] disorders, MEDIC, PubMed abstracts
+\item[B-D] diseases, MEDIC, BioCreative V challenge
+\item[B-C] chemicals, CTD, BioCreative V challenge
+\item[S/C] disorders, UMLS, ShARe/CLEF eHealth 2013
+\item[MCN] various concepts, UMLS, 2019 n2c2 Shared-Task
+\end{description}
+\end{frame}
+
+\begin{frame}{Training on structure improves concept normalization}{\subtitlecite{xu-bethard-2021-triplet}}
+\begin{tabular}{ l c c c c c c}
+\toprule
+Approach & NCBI & B-D & B-C  & S/C & MCN \\
+\midrule
+PubMedBERT & \alert<2>{76.6}  & \alert<2>{76.7} & \alert<2>{91.8}  & \alert<2>{73.6}  & \alert<2>{60.0} \\
+PubMedBERT + Train:O & \alert<2-3>{82.6}  & \alert<2-3>{84.4} & \alert<2-3>{95.8} & \alert<2-3>{83.5} &  \alert<2-3>{69.6}  \\
+PubMedBERT + Train:O + Search:T & \alert<3>{89.5} & \alert<3>{92.3} & \alert<3>{96.7} & \alert<3>{89.2} &  \alert<3>{82.2}  \\
+\bottomrule
+\end{tabular}
+
+\quad O = Ontology; T = target domain terms
+
+\bigskip
+Findings:
+\begin{itemize}
+\item<2-> Triplet-training on ontology yields better term-to-vector network
+\item<3-> Adding new terms to the ontology helps even without retraining
+\end{itemize}
 \end{frame}
 
 
