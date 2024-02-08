@@ -678,7 +678,7 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Concept normalization evaluation}{\subtitlecite{xu-bethard-2021-triplet}}
+\begin{frame}{Concept normalization evaluation}
 Evaluation data:
 \begin{description}[NCBI]
 \item[NCBI] disorders, MEDIC, PubMed abstracts
@@ -768,7 +768,7 @@ edge[latex-] (mention.south);
 
 \subsection{Predicting geographic attributes to constrain search}
 
-\begin{frame}{New Paradigm: classify text + filter entries}
+\begin{frame}{New Paradigm: classify text + filter entries}{\subtitlecite{zhang-bethard-2024}}
 \begin{tikzpicture}[
   model/.style={draw, text width=.45\linewidth, fill=black!25, align=center, inner sep=5pt},
   geoentry/.style={inner sep=0pt, text width=0.35\linewidth, align=center},
@@ -816,12 +816,20 @@ of
 \draw[-latex, bend left] (state.south) to (filter.east);
 \draw[-latex, bend left] (country.south) to (filter.east);
 
-\node[below=0.5cm of filter, draw, geoentry] (entry) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/ParisUSTXP.png}} edge[latex-] (filter.south);
+\node[below=0.4cm of filter, draw, geoentry] (entry) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/ParisUSTXP.png}} edge[latex-] (filter.south);
 \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Results: classify text + filter $\geq$ classify entries}
-\centering
+\begin{frame}{Toponym resolution evaluation}
+Evaluation data:
+\begin{description}[GWN]
+\item[LGL] local and small U.S. news sources \\ {\small\parencite{lieberman2010geotagging}}
+\item[GWN] globally distributed news sites \\ {\small\parencite{gritta2019pragmatic}}
+\item[TRN] global and local news sources \\ {\small\parencite{kamalloo2018coherent}}
+\end{description}
+\end{frame}
+
+\begin{frame}{Predicting structure improves toponym resolution}{\subtitlecite{zhang-bethard-2024}}
 \begin{tabular}{l l c c c}
 \toprule
 & & \multicolumn{3}{c}{Dataset Accuracy} \\
@@ -829,11 +837,16 @@ of
 Model & Classifier input & LGL & GWN & TRN \\
 \midrule
 \cite{ayoola-etal-2022-refined} & text + entries & .786 & .782 & .858 \\
-\cite{zhang-bethard-2023-improving} & text + entries & .807 & \textbf{.828} & .918 \\
-GeoPLACE (ours) & text & \textbf{.863} & .822 & \textbf{.947} \\
-% TODO: add citations
+\cite{zhang-bethard-2023-improving} & text + entries & \alert<2->{.807} & \alert<2->{.828} & \alert<2->{.918} \\
+\cite{zhang-bethard-2024} & text & \alert<2->{.863} & \alert<2->{.822} & \alert<2->{.947} \\
 \bottomrule
 \end{tabular}
+
+\bigskip
+Findings:
+\begin{itemize}
+\item<2-> (Classify text $\Rightarrow$ filter) $\geq$ (retrieve $\Rightarrow$ classify text + entries)
+\end{itemize}
 \end{frame}
 
 
