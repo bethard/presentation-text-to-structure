@@ -317,7 +317,7 @@ $\Downarrow$
 
 \subsection{Time normalization as text-to-structure}
 
-\begin{frame}{Semantically compositional time annotation}
+\begin{frame}{Time expressions are complex}
 Problem: ISO-TimeML can't represent times that:
 \begin{itemize}
 \item don't align to exactly 1 calendar unit, e.g., \textit{the past 2 summers}
@@ -675,14 +675,14 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
   at (0, 2.2*\height)
   {$L = \ln{(1 + e^{Sim(V(t_i), V(t_{n})) - Sim(V(t_i), V(t_{p}))} )})$};
 \foreach \i/\name/\textcolor/\phrase in {
-    -4/p/black/heart\\attack,
-    0/i/ua-red/myocardial\\infarction,
-    4/n/black/cardiovascular\\infections} {
+    -4/p/ua-oasis/heart\\attack,
+    0/i/ua-oasis/myocardial\\infarction,
+    4/n/ua-oasis/cardiovascular\\infections} {
   \node[text only, text=\textcolor]
     (input-\name)
     at (\i*\width, 0)
     {$t_{\name}$ \\ \phrase} edge[latex-,bend left] (umls);
-  \node[draw, align=center, fill=yellow, fill opacity=0.5, text opacity=1]
+  \node[draw, align=center, fill=black!25]
     (bert-\name)
     at (\i*\width, 0.95*\height)
     {PubMed-BERT}
