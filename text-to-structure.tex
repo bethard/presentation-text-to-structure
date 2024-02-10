@@ -18,6 +18,7 @@
 \usepackage[style=authoryear,maxbibnames=99,sorting=nyt,backend=biber]{biblatex}
 \AtEveryBibitem{\clearfield{note}}
 
+\includeonlyframes{current}
 
 \addbibresource{bethard.bib}
 \addbibresource{extra.bib}
@@ -760,7 +761,7 @@ Findings:
   font=\scriptsize,
   remember picture
 ]
-\node[draw, text width=.95\linewidth, align=left, text=ua-red] (text) at (0, 0) {It’s a northeast Texas thing, not just a \subnode[inner sep=0pt]{mention}{\fbox{Paris}} thing\ldots Dallas media stations reported the same message as a hoax\ldots};
+\node[draw, text width=.95\linewidth, align=left, text=ua-red] (text) at (0, 0) {It's a northeast Texas thing, not just a \subnode[inner sep=0pt]{mention}{\fbox{Paris}} thing\ldots Dallas media stations reported the same message as a hoax\ldots};
 
 \node[model, text width=.75\linewidth] (geonames) at (0, -1) {Index (Lucene over GeoNames)}
 edge[latex-] (mention.south);
@@ -795,7 +796,7 @@ edge[latex-] (mention.south);
   font=\scriptsize,
   remember picture
 ]
-\node[draw, text width=.95\linewidth, align=left, text=ua-red] (text) at (0, 0) {It’s a northeast Texas thing, not just a \subnode[inner sep=1pt]{mention2}{\fbox{Paris}} thing\ldots Dallas media stations reported the same message as a hoax\ldots};
+\node[draw, text width=.95\linewidth, align=left, text=ua-red] (text) at (0, 0) {It's a northeast Texas thing, not just a \subnode[inner sep=1pt]{mention2}{\fbox{Paris}} thing\ldots Dallas media stations reported the same message as a hoax\ldots};
 
 \node[model] (geonames) at (-4, -1) {Index (Lucene over GeoNames)}
 edge[latex-] (mention2.south);
@@ -872,18 +873,64 @@ Findings:
 \section{Ongoing and future work}
 
 \begin{frame}{Time normalization as code generation}
-Seq-to-seq framing
+\begin{columns}[T]
+\begin{column}{0.4\textwidth}
+\begin{tikzpicture}[font=\small]
+\pgfmathsetmacro{\height}{1.25}
 
-Constrained decoding
+\node[text=ua-red, anchor=south, inner sep=0pt] (text) at (0, 0) {Mondays and Fridays next January};
+
+\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0, -\height) {Generative \\ Language \\ Model}
+edge[latex-] (text);
+
+\node[align=left, anchor=north, inner sep=0pt] (code) at (0, -2*\height) {%
+Intersection(\\
+\quad Union(\\
+\quad\quad DayOfWeek(MON), \\
+\quad\quad DayOfWeek(FRI)), \\
+\quad Next(\\
+\quad\quad DocTime, \\
+\quad\quad MonthOfYear(JAN)))}
+edge[latex-] (model);
+\end{tikzpicture}
+\end{column}
+\pause
+\begin{column}{0.55\textwidth}
+Constrained decoding:
+\begin{itemize}
+\item Grammar defines valid code
+\item Parser finds valid next tokens
+\item Model masks output distributions
+\end{itemize}
+\end{column}
+\end{columns}
 \end{frame}
 
 
-\begin{frame}{Geographic normalization as text to polygon}
-Defining geographic operators
-
-Constrained decoding
-
-Alternative: pixel-wise prediction
+\begin{frame}[label=current]{Geographic normalization as text to polygon}
+\begin{columns}
+\begin{column}{.45\textwidth}
+\begin{tikzpicture}[font=\footnotesize]
+\pgfmathsetmacro{\height}{.7}
+\pgfmathsetmacro{\width}{1.5}
+\node[text width=.5\linewidth, align=left, anchor=south] (text-in) at (-\width, 0) {between the towns of \textcolor{ua-oasis}{Adrano} and \textcolor{ua-oasis}{S. Maria di Licodia}, 32 kilometers (20 mi) northwest of \textcolor{ua-oasis}{Catania}};
+\node[anchor=south] (map-in) at (\width, 0) {\includegraphics[width=.3\linewidth]{compgeo/biancavilla.png}};
+\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0, -\height) {Generative Language Model}
+edge[latex-] (text-in)
+edge[latex-] (map-in);
+\node[align=left, anchor=north, inner sep=0pt] (code) at (0, -2*\height) {%
+\textsc{Intersection}(\\
+\quad\textsc{Between}(\textsc{Toponym}(001), \textsc{Toponym}(002)),\\
+\quad\textsc{Distance}(\textsc{Toponym}(003), 32, KM, NW)))}
+edge[latex-] (model);
+\node[anchor=north] (map-out) at (0, -4*\height) {\includegraphics[width=.3\linewidth]{compgeo/biancavilla.png}}
+edge[latex-] (code);
+\end{tikzpicture}
+\end{column}
+\begin{column}{.45\textwidth}
+Pixel-based approach
+\end{column}
+\end{columns}
 \end{frame}
 
 
