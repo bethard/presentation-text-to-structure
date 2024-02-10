@@ -910,25 +910,38 @@ Constrained decoding:
 \begin{frame}[label=current]{Geographic normalization as text to polygon}
 \begin{columns}
 \begin{column}{.45\textwidth}
-\begin{tikzpicture}[font=\footnotesize]
-\pgfmathsetmacro{\height}{.7}
+\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
+\pgfmathsetmacro{\height}{.75}
 \pgfmathsetmacro{\width}{1.5}
-\node[text width=.5\linewidth, align=left, anchor=south] (text-in) at (-\width, 0) {between the towns of \textcolor{ua-oasis}{Adrano} and \textcolor{ua-oasis}{S. Maria di Licodia}, 32 kilometers (20 mi) northwest of \textcolor{ua-oasis}{Catania}};
-\node[anchor=south] (map-in) at (\width, 0) {\includegraphics[width=.3\linewidth]{compgeo/biancavilla.png}};
-\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0, -\height) {Generative Language Model}
-edge[latex-] (text-in)
-edge[latex-] (map-in);
-\node[align=left, anchor=north, inner sep=0pt] (code) at (0, -2*\height) {%
+\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-1.2*\width, 0) {between the towns of \textcolor{ua-oasis}{Adrano} and \textcolor{ua-oasis}{S. Maria di Licodia}, 32 kilometers (20 mi) northwest of \textcolor{ua-oasis}{Catania}};
+\node[anchor=south] (map-in) at (\width, -.7*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}};
+\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (-1.2*\width, -1.1*\height) {Language Model}
+edge[latex-] (text-in);
+\node[align=left, anchor=north] (code) at (-.4*\width, -2.2*\height) {%
 \textsc{Intersection}(\\
 \quad\textsc{Between}(\textsc{Toponym}(001), \textsc{Toponym}(002)),\\
 \quad\textsc{Distance}(\textsc{Toponym}(003), 32, KM, NW)))}
 edge[latex-] (model);
-\node[anchor=north] (map-out) at (0, -4*\height) {\includegraphics[width=.3\linewidth]{compgeo/biancavilla.png}}
-edge[latex-] (code);
+\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}};
+\draw[-latex] (code) -- (map-out.north);
+\draw[-latex] (map-in) -- (map-out.north);
 \end{tikzpicture}
 \end{column}
+\pause
 \begin{column}{.45\textwidth}
-Pixel-based approach
+\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
+\pgfmathsetmacro{\height}{.75}
+\pgfmathsetmacro{\width}{1.5}
+\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-\width, 0) {TARGET is between the towns of RED and LIME, 32 kilometres (20 mi) northwest of BLUE.};
+\node[anchor=south] (pixel-in) at (\width, 0) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-in.png}};
+\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0, -\height) {Multi-Modal Model}
+edge[latex-] (text-in)
+edge[latex-] (pixel-in);
+\node[anchor=north] (pixel-out) at (0, -2*\height) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-out.png}}
+edge[latex-] (model);
+\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}}
+edge[latex-] (pixel-out);
+\end{tikzpicture}
 \end{column}
 \end{columns}
 \end{frame}
