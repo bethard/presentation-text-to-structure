@@ -27,6 +27,18 @@
 \addbibresource{extra.bib}
 \renewcommand*{\bibfont}{\scriptsize}
 \newcommand{\subtitlecite}[1]{{\hskip0pt plus 1filll \scriptsize\parencite{#1}}}
+\newcommand{\headshot}[3]{{\tiny\setlength{\tabcolsep}{0pt}%
+\begin{tabular}{c}
+\includegraphics[height=.2\textheight]{#1} \\
+#2 \\
+#3
+\end{tabular}}}
+\newcommand{\sectionbox}{%
+\centering
+\begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+  \usebeamerfont{title}\insertsectionhead\par%
+\end{beamercolorbox}
+\vspace{.2\textheight}}
 
 % Define UA colors
 % https://brand.arizona.edu/applying-the-brand/colors
@@ -56,17 +68,6 @@
 \setbeamertemplate{section in toc}[square]
 \setbeamertemplate{subsection in toc}[square]
 \setbeamertemplate{items}[square]
-}
-
-\AtBeginSection[]{
-  \begin{frame}
-  \vfill
-  \centering
-  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
-    \usebeamerfont{title}\insertsectionhead\par%
-  \end{beamercolorbox}
-  \vfill
-  \end{frame}
 }
 
 % smaller than \strut, but ensures a constant height
@@ -250,6 +251,18 @@ University of Arizona}
 \end{frame}
 
 \section{Designing structured outputs for machine learning}
+
+\begin{frame}[b]
+\sectionbox
+\begin{tabular}{l}
+\funding{funding/nih_nlm.png}{R01LM010090} \\
+\funding{funding/darpa.png}{W911NF-18-1-0014} \\
+\funding{funding/nih_nlm.png}{R01LM012918}
+\end{tabular}
+\hfill
+\headshot{people/xu-dongfang.jpeg}{Dongfang Xu, Ph.D.}{Doctoral student}
+\headshot{people/laparra-egoitz.jpg}{Egoitz Laparra, Ph.D.}{Postdoc}
+\end{frame}
 
 \subsection{Introduction to time normalization}
 
@@ -581,6 +594,13 @@ Findings:
 
 \section{Pre-training neural networks on structure}
 
+\begin{frame}[b]
+\sectionbox
+\funding{funding/nih_nigms.jpg}{R01GM114355}
+\hfill
+\headshot{people/xu-dongfang.jpeg}{Dongfang Xu, Ph.D.}{Doctoral student}
+\end{frame}
+
 \subsection{Introduction to medical concept normalization}
 
 \begin{frame}[t]{Concept normalization: text term $\Rightarrow$ ontology entry}
@@ -738,6 +758,16 @@ Findings:
 
 \section{Prompting models to reveal structural constraints}
 
+\begin{frame}[b]
+\sectionbox
+\begin{tabular}{l}
+\funding{funding/darpa.png}{W911NF-18-1-0014} \\
+\funding{funding/nsf.png}{1831551}
+\end{tabular}
+\hfill
+\headshot{people/zhang-zeyu.png}{Zeyu Zhang, Ph.D.}{Doctoral student}
+\end{frame}
+
 \subsection{Introduction to toponym resolution}
 
 \begin{frame}{Toponym resolution: text locations $\Rightarrow$ map locations}
@@ -875,6 +905,13 @@ Findings:
 
 \section{Ongoing and future work}
 
+\begin{frame}[b]
+\sectionbox
+\hfill
+\headshot{people/laparra-egoitz.jpg}{Egoitz Laparra, Ph.D.}{Postdoc}
+\headshot{people/wang-ruoyao.png}{Ruoyao Wang}{Doctoral student}
+\end{frame}
+
 \begin{frame}{Time normalization as code generation}
 \begin{columns}[T]
 \begin{column}{0.4\textwidth}
@@ -1001,6 +1038,43 @@ edge[latex-] (model);
 \node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}}
 edge[latex-] (pixel-out);
 \end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Thanks!}
+\begin{columns}
+\begin{column}{0.65\textwidth}
+\begin{block}{Research leads}
+\headshot{people/laparra-egoitz.jpg}{Egoitz Laparra, Ph.D.}{Postdoc}
+\quad
+\headshot{people/xu-dongfang.jpeg}{Dongfang Xu, Ph.D.}{Doctoral student}
+\quad
+\headshot{people/zhang-zeyu.png}{Zeyu Zhang, Ph.D.}{Doctoral student}
+\quad
+\headshot{people/wang-ruoyao.png}{Ruoyao Wang}{Doctoral student}
+\end{block}
+\begin{block}{Grant collaborators}
+\headshot{people/savova-guergana.jpg}{Guergana Savova, Ph.D.}{Boston Children's Hospital}
+\headshot{people/surdeanu-mihai.jpeg}{Mihai Surdeanu, Ph.D.}{University of Arizona}
+\headshot{people/lopez-hoffmann-laura.jpg}{Laura L\'{o}pez-Hoffman, Ph.D.}{University of Arizona}
+\headshot{people/miller-timothy.jpg}{Timothy Miller, Ph.D.}{Boston Children's Hospital}
+\end{block}
+\end{column}
+\hfill
+\begin{column}{0.3\textwidth}
+\begin{block}{Funding}
+\small
+\funding{funding/nih_nlm.png}{R01LM010090}
+
+\funding{funding/darpa.png}{W911NF-18-1-0014}
+
+\funding{funding/nih_nigms.jpg}{R01GM114355}
+
+\funding{funding/nsf.png}{1831551}
+
+\funding{funding/nih_nlm.png}{R01LM012918}
+\end{block}
 \end{column}
 \end{columns}
 \end{frame}
