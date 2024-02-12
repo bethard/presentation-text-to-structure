@@ -18,6 +18,7 @@
 \usetikzlibrary{overlay-beamer-styles}
 \usepackage{pgfplots}
 \usepackage{forest}
+\usepackage[linesnumbered,noend]{algorithm2e}
 \usepackage[style=authoryear,maxbibnames=99,sorting=nyt,backend=biber]{biblatex}
 \AtEveryBibitem{\clearfield{note}}
 
@@ -871,6 +872,42 @@ of
 
 \node[below=0.4cm of filter, draw, geoentry] (entry) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/ParisUSTXP.png}} edge[latex-] (filter.south);
 \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Deterministic constraint-based filtering}
+\IncMargin{1em}
+\begin{algorithm}[H]
+  \footnotesize
+  \DontPrintSemicolon
+  \SetKwProg{Def}{Def}{:}{end}
+  \KwIn{a list of candidate entries, $\hat{E}_m$ \newline
+        top 3 predicted countries, $\hat{C}_m$ \newline
+        top 3 predicted states, $\hat{S}_m$ \newline
+        top 3 predicted feature classes, $\hat{F}_m$}
+  \vspace{0.5\baselineskip}
+  \alert<2>{\Def{\textsc{Score}$(x, L)$}{
+    \lIf(\visible<2>{\tcp*[f]{best if it's the top prediction }}){$x = L_0$}{
+      \Return{2}
+    }
+    \lElseIf(\visible<2>{\tcp*[f]{next best if it's any prediction}}){$x \in L$}{
+      \Return{1}
+    }
+    \lElse{
+      \Return{0}
+    }
+  }}
+  \alert<3>{\Def{\textsc{EntryKey}$(e)$}{
+    $c \gets \textsc{Country}(e)$ \;
+    $s \gets \textsc{State}(e)$ \;
+    $f \gets \textsc{Feature}(e)$ \;
+    $key_1 \gets \textsc{Score}(c, \hat{C}_m) \cdot \textsc{Score}(s, \hat{S}_m)$
+    \visible<3>{\tcp*[r]{best if both country and state}}
+    $key_2 \gets (c \in \hat{C}_m) \cdot (s \in \hat{S}_m) \cdot \textsc{Score}(f, \hat{F}_m)$
+    \visible<3>{\tcp*[r]{break ties using feature class}}
+    \Return{$(key_1, key2)$}
+  }}
+  \alert<4>{\Return{$\textsc{Max}(\hat{E}_m, \textsc{key}=\textsc{EntryKey})$}}
+\end{algorithm}
 \end{frame}
 
 \begin{frame}{Toponym resolution evaluation}
