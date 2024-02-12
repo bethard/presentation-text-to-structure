@@ -200,20 +200,28 @@ University of Arizona}
 
 \begin{frame}[t]{Large language models vs. calendars}
 \centering
-\includegraphics[width=.6\textwidth]{chatgpt/calendar.png}
+\begin{tikzpicture}[inner sep=0pt]
+\node (chatgpt) {\includegraphics[width=.6\textwidth]{chatgpt/calendar.png}};
+\pause
+\node[draw] (calendar) at (chatgpt) {\includegraphics[width=.3\textwidth]{calendar/2025-01-MO-FR.png}};
+\end{tikzpicture}
 \end{frame}
 
 \begin{frame}[t]{Large language models vs. maps}
 \centering
-\includegraphics[width=.7\textwidth]{chatgpt/map.png}
+\begin{tikzpicture}[inner sep=0pt]
+\node (chatgpt) {\includegraphics[width=.7\textwidth]{chatgpt/map.png}};
+\pause
+\node[draw] (map) at (chatgpt.south) {\includegraphics[width=.3\textwidth]{compgeo/map-biancavilla-out.png}};
+\end{tikzpicture}
 \end{frame}
 
 \begin{frame}[t]{Large language models vs. ontologies}
 \centering
 \begin{tikzpicture}[inner sep=0pt]
-  \node (chatgpt) {\includegraphics[width=.7\textwidth]{chatgpt/umls.png}};
-  \pause
-  \node[draw] (snomed) at (chatgpt.south) {\includegraphics[width=.3\textwidth]{umls/snomed-ulcer.png}};
+\node (chatgpt) {\includegraphics[width=.7\textwidth]{chatgpt/umls.png}};
+\pause
+\node[draw] (snomed) at (chatgpt.south) {\includegraphics[width=.3\textwidth]{umls/snomed-ulcer.png}};
 \end{tikzpicture}
 \end{frame}
 
