@@ -260,349 +260,7 @@
     \tableofcontents
 \end{frame}
 
-\section{Designing structured outputs for machine learning}
-
-\begin{frame}[b]
-\sectionbox
-\begin{tabular}{l}
-\funding{funding/nih_nlm.png}{R01LM010090} \\
-\funding{funding/darpa.png}{W911NF-18-1-0014} \\
-\funding{funding/nih_nlm.png}{R01LM012918}
-\end{tabular}
-\hfill
-\headshot{people/xu-dongfang.jpeg}{Dongfang Xu, Ph.D.}{Doctoral student}
-\headshot{people/laparra-egoitz.jpg}{Egoitz Laparra, Ph.D.}{Postdoc}
-\end{frame}
-
-\subsection{Introduction to time normalization}
-
-\begin{frame}{Time normalization: text times $\Rightarrow$ calendar times}
-
-\begin{tabular}{l c c c c}
-\textbf{Expression} & & \textbf{ISO-TimeML} & & \textbf{Calendar} \\
-
-\textit{December 5, 2007} & $\Rightarrow$ & 2007-12-05 & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2007-12-05.png} \\ \\
-
-\textit{six days ago} & $\Rightarrow$ & 2024-02-07 & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2024-02-07.png} \\ \\
-
-\textit{the week of March 6} & $\Rightarrow$ & 2024-W10 & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2024-W10.png} \\ \\
-
-\textit{Fridays in January} & $\Rightarrow$ & ???? & $\Rightarrow$ & \raisegraphics{.4}{width=.1\textwidth}{calendar/2024-01-FR.png}
-
-\end{tabular}
-
-\end{frame}
-
-\begin{frame}{Time normalization $<$ 2018: hand-crafted rules}
-\centering
-the week of March 6
-
-$\Downarrow$
-
-\begin{columns}
-\begin{column}{0.4\textwidth}
-\footnotesize
-$\begin{array}{l}
-\textsc{Unit} \Rightarrow \\
-\quad \textit{week} \textit{ / } \\
-\quad \textsc{Weeks} \\
-\textsc{Month} \Rightarrow \\
-\quad \textit{March} \textit{ / } \\
-\quad \textsc{MonthOfYear}=3 \\
-\textsc{TimeSpan} \Rightarrow \\
-\quad \textsc{Unit} \textit{ of } \textsc{TimeSpan} \textit{ / } \\
-\quad \textsc{FindEnclosing}\ \textsc{TimeSpan}\ \textsc{Unit} \\
-\ldots
-\end{array}$
-\end{column}
-\begin{column}{0.55\textwidth}
-\footnotesize
-\begin{forest}
-    [\textsc{TimeSpan}
-        [\textsc{FindEnclosing}]
-        [\textsc{TimeSpan}
-            [\textsc{FindEarlier}]
-            [\textsc{Present}]
-            [\textsc{Field}
-                [\textsc{Field:Month}
-                    [\textsc{MonthOfYear}]
-                    [3] ]
-                [\textsc{Field:Day}
-                    [\textsc{DayOfMonth}]
-                    %[\nonterm{Int:1-31}
-                        [6] ] ] ]% ]
-        [\textsc{Unit}
-            [{\textsc{Weeks}}] ] ]
-\end{forest}
-\end{column}
-\end{columns}
-
-$\Downarrow$
-
-2024-W10
-\end{frame}
-
-\subsection{Time normalization as text-to-structure}
-
-\begin{frame}{Time expressions are complex}
-Problem: ISO-TimeML can't represent times that:
-\begin{itemize}
-\item don't align to exactly 1 calendar unit, e.g., \textit{the past 2 summers}
-\item are relative to events, e.g., \textit{5 days postop}
-\item are unions of other times, e.g, \textit{Mondays and Fridays}
-\end{itemize}
-\pause
-\bigskip
-Humans understand such times:\\[0.5\baselineskip]
-\begin{tabular}{ c c c }
-\visible<3->{\it the past 2 summers} &
-\visible<7->{\it 5 days postop} &
-\visible<11->{\it Mondays and Fridays} \\
-\visible<4->{%
-\begin{tikzpicture}
-\tikztimeline{3}{12}
-\only<5->{%
-\tikztimelineinterval[draw=event]{3+30/365}{3+40/365}{2}{}} % more than 1/365 just so it's visible
-\only<6->{%
-\tikztimelineinterval{1+5/12}{1+8/12}{2}{}
-\tikztimelineinterval{2+5/12}{2+8/12}{2}{}}
-\end{tikzpicture}}
-&
-\visible<8->{%
-\begin{tikzpicture}
-\tikztimeline{2}{7}
-\only<9->{%
-\tikztimelineinterval[draw=event]{6/7}{7/7}{2}{}}
-\only<10->{%
-\tikztimelineinterval{11/7}{12/7}{2}{}}
-\end{tikzpicture}}
-&
-\visible<12->{%
-\begin{tikzpicture}
-\tikztimeline{3}{7}
-\tikztimelineinterval[draw=white]{0}{0}{4}{}% to ensure full vertical space when others are not shown
-\only<13->{%
-\tikztimelineinterval[draw=partialtime]{0+1/7}{0+2/7}{4}{}
-\tikztimelineinterval[draw=partialtime]{1+1/7}{1+2/7}{4}{}
-\tikztimelineinterval[draw=partialtime]{2+1/7}{2+2/7}{4}{}}
-\only<14->{%
-\tikztimelineinterval[draw=partialtime]{0+5/7}{0+6/7}{3}{}
-\tikztimelineinterval[draw=partialtime]{1+5/7}{1+6/7}{3}{}
-\tikztimelineinterval[draw=partialtime]{2+5/7}{2+6/7}{3}{}}
-\only<15>{%
-\tikztimelineinterval{0+1/7}{0+2/7}{2}{}
-\tikztimelineinterval{0+5/7}{0+6/7}{2}{}
-\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
-\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
-\tikztimelineinterval{2+1/7}{2+2/7}{2}{}
-\tikztimelineinterval{2+5/7}{2+6/7}{2}{}}
-\end{tikzpicture}}
-\end{tabular}
-\end{frame}
-
-\begin{frame}{Semantically compositional time annotation}{\subtitlecite{bethard-etal:2016:LREC}}
-Annotate formally-defined, semantically-compositional time operators:
-
-\bigskip
-\AnnotateThree[draw=time]{ex-mafnj-mondays}{Day-Of-Week}{Type=Monday}{Mondays}
-\hspace{0.5em}
-\AnnotateTwo[draw=time]{ex-mafnj-intersection}{Intersection}{%
-\\[\baselineskip]
-\AnnotateTwo[draw=time]{ex-mafnj-and}{Union}{and}}
-\hspace{0.5em}
-\AnnotateThree[draw=time]{ex-mafnj-fridays}{Day-Of-Week}{Type=Friday}{Fridays}
-\hspace{0.5em}
-\AnnotateThree[draw=time]{ex-mafnj-next}{Next}{Interval=DocTime}{next}
-\hspace{0.5em}
-\AnnotateThree[draw=time]{ex-mafnj-january}{Month-Of-Year}{Type=January}{January}
-\begin{tikzpicture}[remember picture,overlay]%
-\AnnotateLink{out=0, in=120}{ex-mafnj-intersection.text east}{ex-mafnj-next.north}
-\AnnotateLink{out=270, in=90}{ex-mafnj-intersection.text split}{ex-mafnj-and.north}
-\AnnotateLink{out=120, in=60}{ex-mafnj-and.text west}{ex-mafnj-mondays.north}
-\AnnotateLink{out=60, in=120}{ex-mafnj-and.text east}{ex-mafnj-fridays.north}
-\AnnotateLink{out=60, in=120}{ex-mafnj-next.text east}{ex-mafnj-january.north}
-\end{tikzpicture}
-
-\bigskip
-\pause
-Temporal logic composes operators to yield timeline intervals:
-
-\smallskip
-$\vphantom{\left(\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{2}{12}
-\tikztimelineinterval{1+0/12}{1+1/12}{2}{}
-\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
-\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
-\end{tikzpicture}}\right)}
-\alt<6->%
-% Intersection(Union(Mondays, Fridays), Next(DocTime, January)) as timeline
-{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{6}{7}
-\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
-\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
-\tikztimelineinterval{2+1/7}{2+2/7}{2}{}
-\tikztimelineinterval{2+5/7}{2+6/7}{2}{}
-\tikztimelineinterval{3+1/7}{3+2/7}{2}{}
-\tikztimelineinterval{3+5/7}{3+6/7}{2}{}
-\tikztimelineinterval{4+1/7}{4+2/7}{2}{}
-\tikztimelineinterval{4+5/7}{4+6/7}{2}{}
-\tikztimelineinterval[draw=partialtime,text=white]{1+0/7}{5+3/7}{-0.5}{\tiny\textbf{January 2025}}
-\end{tikzpicture}}}
-{\alt<2->%
-% Intersection(Union(Mondays, Fridays), Next(DocTime, January)) as operators
-{\operatorname{Intersection}\left(
-\alt<4->%
-% Union(Mondays, Fridays) as timeline
-{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{2}{7}
-\tikztimelineinterval{0+1/7}{0+2/7}{2}{}
-\tikztimelineinterval{0+5/7}{0+6/7}{2}{}
-\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
-\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
-\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny W1}
-\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny W2}
-\end{tikzpicture}}}
-% Union(Mondays, Fridays) as operator
-{\operatorname{Union}\left(
-\alt<3->%
-% Mondays as timeline
-{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{2}{7}
-\tikztimelineinterval{0+1/7}{0+2/7}{2}{}
-\tikztimelineinterval{1+1/7}{1+2/7}{2}{}
-\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny W1}
-\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny W2}
-\end{tikzpicture}}}
-% Mondays as text
-{Mondays},
-\alt<3->%
-% Fridays as timeline
-{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{2}{7}
-\tikztimelineinterval{0+5/7}{0+6/7}{2}{}
-\tikztimelineinterval{1+5/7}{1+6/7}{2}{}
-\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny W1}
-\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny W2}
-\end{tikzpicture}}}
-% Fridays as text
-{Fridays}
-\right)},
-\alt<5->%
-% Next(DocTime, January) as timeline
-{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{2}{12}
-\tikztimelineinterval{1+0/12}{1+1/12}{2}{}
-\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
-\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
-\end{tikzpicture}}}
-% Next(DocTime, January) as operator
-{\operatorname{Next}\left(
-\alt<3->%
-% DocTime as timeline
-{\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{2}{12}
-\tikztimelineinterval[draw=event]{0+2/24}{0+3/24}{2}{} % bigger than 1/365 to be visible
-\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
-\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
-\end{tikzpicture}}}
-% DocTime as operator
-{\operatorname{DocTime}},
-\alt<3->{%
-% January as timeline
-\text{\begin{tikzpicture}[xscale=0.57, baseline={(current bounding box.center)}]
-\tikztimeline{2}{12}
-\tikztimelineinterval{0+0/12}{0+1/12}{2}{}
-\tikztimelineinterval{1+0/12}{1+1/12}{2}{}
-\tikztimelineinterval[draw=none,text=black]{0}{1}{-0.5}{\tiny 2024}
-\tikztimelineinterval[draw=none,text=black]{1}{2}{-0.5}{\tiny 2025}
-\end{tikzpicture}}}
-% January as text
-{January}
-\right)}
-\right)}
-% Intersection(Union(Mondays, Fridays), Next(DocTime, January)) as text
-{}}
-$
-\end{frame}
-
-\begin{frame}{Neural networks for time normalization}{\subtitlecite{laparra-xu-bethard:2018:TACL,xu-laparra-bethard:2019:S19-1}}
-\begin{tikzpicture}[
-  scale=0.79, every node/.style={scale=0.79},
-  brace/.style={draw,thick,decoration=brace,decorate}]
-  \pgfmathsetmacro{\width}{3.6}
-  \pgfmathsetmacro{\height}{1.1}
-
-  \node (1s-i0) at (0.7, 0*\height) {Input};
-  \node (1s-fv0) at (0.7, 1*\height) {Feature};
-  \node (1s-cv0) at (0.7, 2*\height) {Embed};
-  \node (1s-g10) at (0.7, 3*\height) {Bi-GRU};
-  \node (1s-g20) at (0.7, 4*\height) {Bi-GRU};
-  \node (1s-s0) at (0.7, 5*\height) {Sigmoid};
-  \node (1s-o0) at (0.7, 6.25*\height) {Output};
-
-\foreach \c/\f/\g/\h/\o [count=\step from 1] in {M/M/Lu/NNP/{B-DayOfWeek},o/o/Ll/NNP/{I-DayOfWeek},n/n/Ll/NNP/{I-DayOfWeek},d/d/Ll/NNP/{I-DayOfWeek},\ldots} {
-    % input character
-    \ifdefstring{\c}{\ldots}{
-      \node (1s-i\step) at (\step*\width-0.2*\width, 0*\height) {\vphantom{My}\c};
-      \node (1s-fv\step) at (\step*\width-0.2*\width, 2*\height) {\ldots};
-      \node (1s-g1\step) at (\step*\width-0.2*\width, 3*\height) {\ldots};
-      \node (1s-g2\step) at (\step*\width-0.2*\width, 4*\height) {\ldots};
-      \node (1s-s\step) at (\step*\width-0.2*\width, 5*\height) {\ldots};
-      \node (1s-o\step) at (\step*\width-0.2*\width, 6.25*\height) {\ldots};
-    }{
-      \node[font=\itshape] (1s-i\step) at (\step*\width, 0*\height) {\vphantom{My}\c};
-      \node[text={ua-red}] (1s-f1\step) at (\step*\width-0.3*\width, 1*\height) {\vphantom{My}\f};
-      \node[text={ua-blue}] (1s-f2\step) at (\step*\width, 1*\height) {\vphantom{My}\g};
-      \node[text={green!50!black}] (1s-f3\step) at (\step*\width+0.3*\width, 1*\height) {\vphantom{My}\h};
-      \node[hid={2}{ua-red}] (1s-fv1\step) at (\step*\width-0.3*\width, 2*\height) {};
-      \node[hid={2}{ua-blue}] (1s-fv2\step) at (\step*\width, 2*\height) {};
-      \node[hid={2}{green!50!black}] (1s-fv3\step) at (\step*\width+0.3*\width, 2*\height) {};
-      \node[hid={3}{ua-red!50!ua-blue}] (1s-g1\step) at (\step*\width, 3*\height) {};
-      \node[hid={3}{ua-red!50!ua-blue}] (1s-g2\step) at (\step*\width, 4*\height) {};
-      \node[hid={2}{ua-red!25!ua-blue}] (1s-s\step) at (\step*\width, 5*\height) {};
-      \node[align=center,font=\scshape] (1s-o\step) at (\step*\width, 6.25*\height) {\o};
-      \draw[->] (1s-i\step.north) -> (1s-f1\step.south);
-      \draw[->] (1s-i\step.north) -> (1s-f2\step.south);
-      \draw[->] (1s-i\step.north) -> (1s-f3\step.south);
-      \draw[->] (1s-f1\step.north) -> (1s-fv1\step.south);
-      \draw[->] (1s-f2\step.north) -> (1s-fv2\step.south);
-      \draw[->] (1s-f3\step.north) -> (1s-fv3\step.south);
-      \draw[->] (\step*\width, 2.3*\height) -> (1s-g1\step.south);
-      \draw[->] (1s-g1\step.north) -> (1s-g2\step.south);
-      \draw[->] (1s-g2\step.north) -> (1s-s\step.south);
-      \draw[->] (1s-s\step.north) -> (1s-o\step.south);
-    }
-    % recurrent links
-    \ifdefstring{\step}{1}{}{
-      \pgfmathtruncatemacro{\last}{add(\step,-1)}
-      \draw[<->] (1s-g1\last.east) -> (1s-g1\step.west);
-      \draw[<->] (1s-g2\last.east) -> (1s-g2\step.west);
-    }
-  }
-\end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Structure enables learning for time normalization}{\subtitlecite{laparra-xu-bethard:2018:TACL,xu-laparra-bethard:2019:S19-1}}
-\begin{tabular}{ l c c }
-\toprule
-& TempEval 2013 & THYME \\
-Model & (News) $F_1$ & (Clinical) $F_1$ \\
-\midrule
-HeidelTime (grammar) & \alert<2>{74} & \alert<2>{70} \\
-\cite{laparra-xu-bethard:2018:TACL} & \alert<2-3>{77} &  \alert<2-3>{76} \\
-\cite{xu-laparra-bethard:2019:S19-1} & \alert<3>{82} & \alert<3>{86} \\
-\bottomrule
-\end{tabular}
-
-\bigskip
-Findings:
-\begin{itemize}
-\item<2-> With structured output, machine learning $>$ 10,000+ hand crafted rules
-\item<3-> Pre-training character embeddings further improves models
-\end{itemize}
-\end{frame}
-
-\section{Pre-training neural networks on structure}
+\section{Lesson 1: Structured Pre-training $>$ Unstructured Pre-training}
 
 \begin{frame}[b]
 \sectionbox
@@ -689,6 +347,8 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 \end{tikzpicture}
 \end{frame}
 
+\subsection{Pre-training on medical ontologies}
+
 \begin{frame}{Training a term-to-vector network from UMLS}{\subtitlecite{xu-bethard-2021-triplet}}
 \begin{enumerate}
 \item Create triplets of input term $t_i$, match term $t_p$, mis-match term $t_n$
@@ -764,9 +424,21 @@ Findings:
 \end{frame}
 
 
-\subsection{Pre-training on medical ontologies}
+\section{Lesson 2: Structured Prompt $>$ Graph-Structured Network}
 
-\section{Prompting models to reveal structural constraints}
+\begin{frame}[b]
+\sectionbox
+\funding{funding/nih_nlm.png}{R01LM010090}
+\quad\funding{funding/darpa.png}{W911NF-18-1-0014}
+\hfill
+\headshot{people/su-xin.jpg}{Xin Su}{Doctoral student}
+\end{frame}
+
+\subsection{Introduction to timeline-based question answering}
+
+\subsection{Linearizing timelines into question answering input}
+
+\section{Lesson 3: External Structure Execution $>$ Implicit Network Reasoning}
 
 \begin{frame}[b]
 \sectionbox
@@ -829,7 +501,7 @@ edge[latex-] (mention.south);
 \end{frame}
 
 
-\subsection{Predicting geographic attributes to constrain search}
+\subsection{Predicting geographic attributes for executable constraints}
 
 \begin{frame}{New Paradigm: classify text + filter entries}{\subtitlecite{zhang-bethard-2024}}
 \begin{tikzpicture}[
@@ -949,15 +621,61 @@ Findings:
 \end{frame}
 
 
-\section{Ongoing and future work}
+\section{Opportunity 1: Training complex external knowledge into LLMs}
+
+\begin{frame}[b]
+\sectionbox
+\hfill
+\headshot{people/laparra-egoitz.jpg}{Egoitz Laparra, Ph.D.}{Postdoc}
+\headshot{people/wang-ruoyao.png}{Ruoyao Wang}{Doctoral student}
+\end{frame}
+
+
+\begin{frame}{Geographic normalization as text to polygon}
+\begin{columns}
+\begin{column}{.45\textwidth}
+\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
+\pgfmathsetmacro{\height}{.75}
+\pgfmathsetmacro{\width}{1.5}
+\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-1.2*\width, 0) {between the towns of \textcolor{ua-oasis}{Adrano} and \textcolor{ua-oasis}{S. Maria di Licodia}, 32 kilometers (20 mi) northwest of \textcolor{ua-oasis}{Catania}};
+\node[anchor=south] (map-in) at (\width, -.7*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-in.png}};
+\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (-1.2*\width, -1.1*\height) {Language Model}
+edge[latex-] (text-in);
+\node[align=left, anchor=north] (code) at (-.4*\width, -2.2*\height) {%
+\textsc{Intersection}(\\
+\quad\textsc{Between}(\textsc{Toponym}(001), \textsc{Toponym}(002)),\\
+\quad\textsc{Distance}(\textsc{Toponym}(003), 32, KM, NW)))}
+edge[latex-] (model);
+\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}};
+\draw[-latex] (code) -- (map-out.north);
+\draw[-latex] (map-in) -- (map-out.north);
+\end{tikzpicture}
+\end{column}
+\pause
+\begin{column}{.45\textwidth}
+\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
+\pgfmathsetmacro{\height}{.75}
+\pgfmathsetmacro{\width}{1.5}
+\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-\width, 0) {TARGET is between the towns of RED and LIME, 32 kilometres (20 mi) northwest of BLUE.};
+\node[anchor=south] (pixel-in) at (\width, 0) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-in.png}};
+\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0, -\height) {Multi-Modal Model}
+edge[latex-] (text-in)
+edge[latex-] (pixel-in);
+\node[anchor=north] (pixel-out) at (0, -2*\height) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-out.png}}
+edge[latex-] (model);
+\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}}
+edge[latex-] (pixel-out);
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\section{Opportunity 2: Teaching LLMs to access external knowledge via tools}
 
 \begin{frame}[b]
 \sectionbox
 \hfill
 \headshot{people/su-xin.jpg}{Xin Su}{Doctoral student}
-\headshot{people/zhang-jiacheng.jpeg}{Jiacheng Zhang}{Doctoral student}
-\headshot{people/laparra-egoitz.jpg}{Egoitz Laparra, Ph.D.}{Postdoc}
-\headshot{people/wang-ruoyao.png}{Ruoyao Wang}{Doctoral student}
 \end{frame}
 
 \begin{frame}{Time normalization as code generation}
@@ -1050,45 +768,6 @@ Constrained decoding:
 \end{columns}
 \end{frame}
 
-
-\begin{frame}{Geographic normalization as text to polygon}
-\begin{columns}
-\begin{column}{.45\textwidth}
-\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
-\pgfmathsetmacro{\height}{.75}
-\pgfmathsetmacro{\width}{1.5}
-\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-1.2*\width, 0) {between the towns of \textcolor{ua-oasis}{Adrano} and \textcolor{ua-oasis}{S. Maria di Licodia}, 32 kilometers (20 mi) northwest of \textcolor{ua-oasis}{Catania}};
-\node[anchor=south] (map-in) at (\width, -.7*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-in.png}};
-\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (-1.2*\width, -1.1*\height) {Language Model}
-edge[latex-] (text-in);
-\node[align=left, anchor=north] (code) at (-.4*\width, -2.2*\height) {%
-\textsc{Intersection}(\\
-\quad\textsc{Between}(\textsc{Toponym}(001), \textsc{Toponym}(002)),\\
-\quad\textsc{Distance}(\textsc{Toponym}(003), 32, KM, NW)))}
-edge[latex-] (model);
-\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}};
-\draw[-latex] (code) -- (map-out.north);
-\draw[-latex] (map-in) -- (map-out.north);
-\end{tikzpicture}
-\end{column}
-\pause
-\begin{column}{.45\textwidth}
-\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
-\pgfmathsetmacro{\height}{.75}
-\pgfmathsetmacro{\width}{1.5}
-\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-\width, 0) {TARGET is between the towns of RED and LIME, 32 kilometres (20 mi) northwest of BLUE.};
-\node[anchor=south] (pixel-in) at (\width, 0) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-in.png}};
-\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0, -\height) {Multi-Modal Model}
-edge[latex-] (text-in)
-edge[latex-] (pixel-in);
-\node[anchor=north] (pixel-out) at (0, -2*\height) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-out.png}}
-edge[latex-] (model);
-\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}}
-edge[latex-] (pixel-out);
-\end{tikzpicture}
-\end{column}
-\end{columns}
-\end{frame}
 
 \begin{frame}{Thanks!}
 \begin{block}{Research leads}
