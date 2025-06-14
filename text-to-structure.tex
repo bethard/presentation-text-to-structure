@@ -183,11 +183,11 @@
 % short command for drawing an interval the width of a single primary interval
 \newcommand{\tikztimelineprimaryinterval}[4][]{\tikztimelineinterval[#1]{#2}{#2+1}{#3}{#4}}
 
-\author[Bethard]{Dr. Steven Bethard}
-\institute[Arizona]{University of Arizona}
+\author[Bethard]{Steven Bethard, Ph.D.}
+\institute[Arizona]{Associate Professor \\ College of Information Science \\ University of Arizona}
 
-\title{Mapping Text to Structured Representations}
-\date[]{13 Feb 2024}
+\title{Can large language models understand language-external structures?}
+\date[]{25 Jun 2025}
 
 \begin{document}
 
@@ -196,30 +196,33 @@
   \titlepage
 \end{frame}
 
-\begin{frame}[t]{Large language models vs. calendars}
+\begin{frame}[t]{Large language models vs. timelines}
 \centering
 \begin{tikzpicture}[inner sep=0pt]
-\node (chatgpt) {\includegraphics[width=.6\textwidth]{chatgpt/calendar.png}};
+\node (chatgpt) {\includegraphics[width=.8\textwidth]{chatgpt/timeline.png}};
 \pause
-\node[draw] (calendar) at (chatgpt) {\includegraphics[width=.3\textwidth]{calendar/2025-01-MO-FR.png}};
+\node[draw] (calendar1) at (chatgpt) {\includegraphics[width=.5\textwidth]{timeline/washington-president.png}};
+\node[draw, anchor=north] (calendar2) at (calendar1.south) {\includegraphics[width=.5\textwidth]{timeline/washington-chancellor.png}};
 \end{tikzpicture}
 \end{frame}
 
 \begin{frame}[t]{Large language models vs. maps}
 \centering
 \begin{tikzpicture}[inner sep=0pt]
-\node (chatgpt) {\includegraphics[width=.7\textwidth]{chatgpt/map.png}};
+\node (chatgpt) {\includegraphics[width=.8\textwidth]{chatgpt/map.png}};
 \pause
-\node[draw] (map) at (chatgpt.south) {\includegraphics[width=.3\textwidth]{compgeo/map-biancavilla-out.png}};
+\node[draw, yshift=1cm] (map) at (chatgpt.south) {\includegraphics[width=.3\textwidth]{compgeo/map-biancavilla-out.png}};
 \end{tikzpicture}
 \end{frame}
 
 \begin{frame}[t]{Large language models vs. ontologies}
 \centering
 \begin{tikzpicture}[inner sep=0pt]
-\node (chatgpt) {\includegraphics[width=.7\textwidth]{chatgpt/umls.png}};
+\node (chatgpt) {\includegraphics[width=.8\textwidth]{chatgpt/snomed.png}};
 \pause
-\node[draw] (snomed) at (chatgpt.south) {\includegraphics[width=.3\textwidth]{umls/snomed-ulcer.png}};
+\node[draw, xshift=1cm] (snomed1) at (chatgpt.south) {\includegraphics[width=.4\textwidth]{snomed/fetal-anatomy-study.png}};
+\pause
+\node[draw, anchor=north] (snomed2) at (snomed1.north) {\includegraphics[width=.4\textwidth]{snomed/vertigo.png}};
 \end{tikzpicture}
 \end{frame}
 
