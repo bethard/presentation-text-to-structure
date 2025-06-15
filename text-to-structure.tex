@@ -256,11 +256,11 @@
 
 
 \begin{frame}
-    \frametitle{Outline}
+    \frametitle{Talk Outline: Lessons and Opportunities}
     \tableofcontents
 \end{frame}
 
-\section{Lesson 1: Structured Pre-training $>$ Unstructured Pre-training}
+\section{Lesson 1: Structured~Pre-training $>$ Unstructured~Pre-training}
 
 \begin{frame}[b]
 \sectionbox
@@ -269,7 +269,7 @@
 \headshot{people/xu-dongfang.jpeg}{Dongfang Xu, Ph.D.}{Doctoral student}
 \end{frame}
 
-\subsection{Introduction to medical concept normalization}
+\subsection{Medical concept normalization}
 
 \begin{frame}[t]{Concept normalization: text term $\Rightarrow$ ontology entry}
 \centering
@@ -347,8 +347,6 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 \end{tikzpicture}
 \end{frame}
 
-\subsection{Pre-training on medical ontologies}
-
 \begin{frame}{Training a term-to-vector network from UMLS}{\subtitlecite{xu-bethard-2021-triplet}}
 \begin{enumerate}
 \item Create triplets of input term $t_i$, match term $t_p$, mis-match term $t_n$
@@ -424,7 +422,7 @@ Findings:
 \end{frame}
 
 
-\section{Lesson 2: Structured Prompt $>$ Graph-Structured Network}
+\section{Lesson 2: Structured~Prompt $>$ Graph-Structured~Network}
 
 \begin{frame}[b]
 \sectionbox
@@ -434,11 +432,12 @@ Findings:
 \headshot{people/su-xin.jpg}{Xin Su}{Doctoral student}
 \end{frame}
 
-\subsection{Introduction to timeline-based question answering}
+\subsection{Timeline-based question answering}
 
-\subsection{Linearizing timelines into question answering input}
+\begin{frame}{TODO}
+\end{frame}
 
-\section{Lesson 3: External Structure Execution $>$ Implicit Network Reasoning}
+\section{Lesson 3: External~Structure~Execution $>$ Implicit~Network~Reasoning}
 
 \begin{frame}[b]
 \sectionbox
@@ -450,7 +449,7 @@ Findings:
 \headshot{people/zhang-zeyu.png}{Zeyu Zhang, Ph.D.}{Doctoral student}
 \end{frame}
 
-\subsection{Introduction to toponym resolution}
+\subsection{Toponym resolution}
 
 \begin{frame}{Toponym resolution: text locations $\Rightarrow$ map locations}
 \centering
@@ -500,8 +499,6 @@ edge[latex-] (mention.south);
 \end{tikzpicture}
 \end{frame}
 
-
-\subsection{Predicting geographic attributes for executable constraints}
 
 \begin{frame}{New Paradigm: classify text + filter entries}{\subtitlecite{zhang-bethard-2024}}
 \begin{tikzpicture}[
@@ -630,6 +627,7 @@ Findings:
 \headshot{people/wang-ruoyao.png}{Ruoyao Wang}{Doctoral student}
 \end{frame}
 
+\subsection{Geographic expression normalization}
 
 \begin{frame}{Geographic normalization as text to polygon}
 \begin{columns}
@@ -677,6 +675,8 @@ edge[latex-] (pixel-out);
 \hfill
 \headshot{people/su-xin.jpg}{Xin Su}{Doctoral student}
 \end{frame}
+
+\subsection{Time expression normalization}
 
 \begin{frame}{Time normalization as code generation}
 \begin{columns}[T]
