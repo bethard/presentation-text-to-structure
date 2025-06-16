@@ -347,7 +347,7 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
 \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Training a term-to-vector network from UMLS}{\subtitlecite{xu-bethard-2021-triplet}}
+\begin{frame}{Training term-to-vector language models on UMLS}{\subtitlecite{xu-bethard-2021-triplet}}
 \begin{enumerate}
 \item Create triplets of input term $t_i$, match term $t_p$, mis-match term $t_n$
 \item Train network so $t_i$ is more similar to $t_p$ than $t_n$
@@ -400,7 +400,7 @@ Evaluation data:
 \end{description}
 \end{frame}
 
-\begin{frame}{Training on structure improves concept normalization}{\subtitlecite{xu-bethard-2021-triplet}}
+\begin{frame}{Structured pre-training $>$ unstructured pre-training}{\subtitlecite{xu-bethard-2021-triplet}}
 \begin{tabular}{ l c c c c c c}
 \toprule
 Approach & NCBI & B-D & B-C  & S/C & MCN \\
@@ -422,12 +422,11 @@ Findings:
 \end{frame}
 
 
-\section{Lesson 2: Structured~Prompt $>$ Graph-Structured~Network}
+\section{Lesson 2: Structured~Prompt $>$ Structured~Network}
 
 \begin{frame}[b]
 \sectionbox
 \funding{funding/nih_nlm.png}{R01LM010090}
-\quad\funding{funding/darpa.png}{W911NF-18-1-0014}
 \hfill
 \headshot{people/su-xin.jpg}{Xin Su}{Doctoral student}
 \end{frame}
@@ -437,7 +436,7 @@ Findings:
 \begin{frame}{TODO}
 \end{frame}
 
-\section{Lesson 3: External~Structure~Execution $>$ Implicit~Network~Reasoning}
+\section{Lesson 3: Predicting~Executable~Structure $>$ Network~Reasoning}
 
 \begin{frame}[b]
 \sectionbox
@@ -467,7 +466,7 @@ Findings:
 \end{frame}
 
 
-\begin{frame}{Toponym resolution $<$ 2023: retrieve + classify}
+\begin{frame}{Toponym resolution $<$ 2023: \\\quad retrieve entries $\Rightarrow$ classify text + entry}
 \begin{tikzpicture}[
   model/.style={draw, fill=black!25, align=center, inner sep=5pt},
   geoentry/.style={inner sep=1pt, text width=0.22\linewidth, align=center},
@@ -500,7 +499,7 @@ edge[latex-] (mention.south);
 \end{frame}
 
 
-\begin{frame}{New Paradigm: classify text + filter entries}{\subtitlecite{zhang-bethard-2024}}
+\begin{frame}{New Paradigm: classify text attributes $\Rightarrow$ filter entries}{\subtitlecite{zhang-bethard-2024}}
 \begin{tikzpicture}[
   model/.style={draw, text width=.45\linewidth, fill=black!25, align=center, inner sep=5pt},
   geoentry/.style={inner sep=0pt, text width=0.35\linewidth, align=center},
@@ -552,7 +551,7 @@ of
 \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Deterministic constraint-based filtering}
+\begin{frame}{Executing deterministic attribute-based filters}
 \IncMargin{1em}
 \begin{algorithm}[H]
   \footnotesize
@@ -597,7 +596,7 @@ Evaluation data:
 \end{description}
 \end{frame}
 
-\begin{frame}{Predicting structure improves toponym resolution}{\subtitlecite{zhang-bethard-2024}}
+\begin{frame}{Predicting executable structure $>$ network reasoning}{\subtitlecite{zhang-bethard-2024}}
 \begin{tabular}{l l c c c}
 \toprule
 & & \multicolumn{3}{c}{Dataset Accuracy} \\
@@ -613,7 +612,7 @@ Model & Classifier input & LGL & GWN & TRN \\
 \bigskip
 Findings:
 \begin{itemize}
-\item<2-> (Classify text $\Rightarrow$ filter) $\geq$ (retrieve $\Rightarrow$ classify text + entries)
+\item<2-> Classify attributes + execute filter $\geq$ classify text with each entry
 \end{itemize}
 \end{frame}
 
