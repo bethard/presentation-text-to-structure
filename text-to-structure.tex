@@ -1,5 +1,7 @@
 % !TEX TS-program = pdflatexmk
 
+\pdfminorversion=6
+
 \documentclass[14pt,aspectratio=169]{beamer}
 \usepackage{newtxtext,newtxmath}
 \usepackage{microtype}
@@ -7,6 +9,7 @@
 \usepackage{array}
 \usepackage{booktabs}
 \usepackage{graphicx}
+\usepackage{graphbox}
 \usepackage{tikz}
 \usetikzlibrary{fit}
 \usetikzlibrary{positioning}
@@ -21,6 +24,7 @@
 \usepackage[linesnumbered,noend]{algorithm2e}
 \usepackage[style=authoryear,maxbibnames=99,sorting=nyt,backend=biber]{biblatex}
 \AtEveryBibitem{\clearfield{note}}
+
 
 %\includeonlyframes{current}
 
@@ -201,8 +205,8 @@
 \begin{tikzpicture}[inner sep=0pt]
 \node (chatgpt) {\includegraphics[width=.8\textwidth]{chatgpt/timeline.png}};
 \pause
-\node[draw] (calendar1) at (chatgpt) {\includegraphics[width=.5\textwidth]{timeline/washington-president.png}};
-\node[draw, anchor=north] (calendar2) at (calendar1.south) {\includegraphics[width=.5\textwidth]{timeline/washington-chancellor.png}};
+\node[draw] (calendar1) at (chatgpt) {\includegraphics[width=.45\textwidth]{timeline/washington-president.png}};
+\node[draw, anchor=north] (calendar2) at (calendar1.south) {\includegraphics[width=.45\textwidth]{timeline/washington-chancellor.png}};
 \end{tikzpicture}
 \end{frame}
 
@@ -373,7 +377,7 @@ I felt like \AnnotateTwo[draw=ua-red]{vomiting}{\visible<2->{C0042963}}{vomiting
   \node[text only, text=\textcolor]
     (input-\name)
     at (\i*\width, 0)
-    {$t_{\name}$ \\ \phrase} edge[latex-,bend left] (umls);
+    {$t_{\name}$ \\ \phrase} edge[latex-,bend left=22] (umls);
   \node[draw, align=center, fill=black!25]
     (bert-\name)
     at (\i*\width, 0.95*\height)
@@ -416,7 +420,7 @@ PubMedBERT + Train:O + Search:T & \alert<3>{89.5} & \alert<3>{92.3} & \alert<3>{
 \bigskip
 Findings:
 \begin{itemize}
-\item<2-> Triplet-training on ontology yields better term-to-vector network
+\item<2-> Triplet-training on ontology yields better language model
 \item<3-> Adding new terms to the ontology helps even without retraining
 \end{itemize}
 \end{frame}
@@ -489,19 +493,19 @@ edge[latex-] (mention.south);
     0/ParisCA08P.png/Paris [SEP] CA} {
     \node[draw, geoentry] (entry\n) at (-5.4 + 3.6*\n, -2.25) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/\png}};
     \node[draw, textforentry, below=0.25cm of entry\n.south] (transformerin\n) {[CLS] \textcolor{geonames-blue}{\entry\ldots}\ [SEP] \textcolor{ua-red}{Paris [SEP] It's a northeast Texas\ldots}};
-    \node[below=1.5cm of transformerin\n.south] (prediction\n) {\strut\prediction};    
+    \node[below=1.4cm of transformerin\n.south] (prediction\n) {\strut\prediction};
     \draw[-latex] (geonames.south) to (entry\n.north);
     \draw[-latex] (entry\n.south) to (transformerin\n.north);
     \draw[-latex] (transformerin\n.south) to (prediction\n.north);
 }
-\node[model, text width=.75\linewidth] (transformer) at (0, -4.5) {Classifier (Transformer Network)};
+\node[model, text width=.75\linewidth] (transformer) at (0, -4.4) {Classifier (Transformer Network)};
 \end{tikzpicture}
 \end{frame}
 
 
-\begin{frame}{New Paradigm: classify text attributes $\Rightarrow$ filter entries}{\subtitlecite{zhang-bethard-2024}}
+\begin{frame}{New Paradigm: classify text attributes $\Rightarrow$ filter entries}{\subtitlecite{zhang-etal-2024-improving-toponym}}
 \begin{tikzpicture}[
-  model/.style={draw, text width=.45\linewidth, fill=black!25, align=center, inner sep=5pt},
+  model/.style={draw, text width=.44\linewidth, fill=black!25, align=center, inner sep=5pt},
   geoentry/.style={inner sep=0pt, text width=0.35\linewidth, align=center},
   textforentry/.style={fill=white, inner sep=1pt, text width=0.45\linewidth, align=left},
   font=\scriptsize,
@@ -512,7 +516,7 @@ edge[latex-] (mention.south);
 \node[model] (geonames) at (-4, -1) {Index (Lucene over GeoNames)}
 edge[latex-] (mention2.south);
 
-\node[model] (filter) at (-4, -5) {Filter};
+\node[model] (filter) at (-4, -4.8) {Execute Deterministic Filter};
 
 \foreach \png [count=\n from 0] in {
     % https://www.geonames.org/2988507/paris.html
@@ -523,7 +527,7 @@ edge[latex-] (mention2.south);
     ParisUSTXA.png,
     % https://www.geonames.org/6942553/paris.html
     ParisCA08P.png} {
-    \node[draw, geoentry] (entry\n) at (-4.75 + 0.5*\n, -2.25 - 0.5*\n) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/\png}} edge[latex-] (geonames) edge[-latex] (filter);
+    \node[draw, geoentry] (entry\n) at (-4.75 + 0.5*\n, -2.25 - 0.45*\n) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/\png}} edge[latex-] (geonames) edge[-latex] (filter);
 }
 
 \node[draw, textforentry] (transformerin) at (+4, -1.25) {%
@@ -547,7 +551,7 @@ of
 \draw[-latex, bend left] (state.south) to (filter.east);
 \draw[-latex, bend left] (country.south) to (filter.east);
 
-\node[below=0.4cm of filter, draw, geoentry] (entry) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/ParisUSTXP.png}} edge[latex-] (filter.south);
+\node[below=0.35cm of filter, draw, geoentry] (entry) {\includegraphics[width=\linewidth,trim={0 0 4cm 0},clip]{geonames/ParisUSTXP.png}} edge[latex-] (filter.south);
 \end{tikzpicture}
 \end{frame}
 
@@ -561,7 +565,7 @@ of
         top 3 predicted countries, $\hat{C}_m$ \newline
         top 3 predicted states, $\hat{S}_m$ \newline
         top 3 predicted feature classes, $\hat{F}_m$}
-  \vspace{0.5\baselineskip}
+  \vspace{0.2\baselineskip}
   \alert<2>{\Def{\textsc{Score}$(x, L)$}{
     \lIf(\visible<2>{\tcp*[f]{best if it's the top prediction }}){$x = L_0$}{
       \Return{2}
@@ -596,8 +600,8 @@ Evaluation data:
 \end{description}
 \end{frame}
 
-\begin{frame}{Predicting executable structure $>$ network reasoning}{\subtitlecite{zhang-bethard-2024}}
-\begin{tabular}{l l c c c}
+\begin{frame}{Predicting executable structure $>$ network reasoning}{\subtitlecite{zhang-etal-2024-improving-toponym}}
+\begin{tabular}{@{} l l c c c @{}}
 \toprule
 & & \multicolumn{3}{c}{Dataset Accuracy} \\
 \cmidrule(lr){3-5}
@@ -605,7 +609,7 @@ Model & Classifier input & LGL & GWN & TRN \\
 \midrule
 \cite{ayoola-etal-2022-refined} & text + entries & .786 & .782 & .858 \\
 \cite{zhang-bethard-2023-improving} & text + entries & \alert<2->{.807} & \alert<2->{.828} & \alert<2->{.918} \\
-\cite{zhang-bethard-2024} & text & \alert<2->{.863} & \alert<2->{.822} & \alert<2->{.947} \\
+\cite{zhang-etal-2024-improving-toponym} & text & \alert<2->{.863} & \alert<2->{.822} & \alert<2->{.947} \\
 \bottomrule
 \end{tabular}
 
@@ -629,42 +633,78 @@ Findings:
 \subsection{Geographic expression normalization}
 
 \begin{frame}{Geographic normalization as text to polygon}
-\begin{columns}
-\begin{column}{.45\textwidth}
-\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
-\pgfmathsetmacro{\height}{.75}
-\pgfmathsetmacro{\width}{1.5}
-\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-1.2*\width, 0) {between the towns of \textcolor{ua-oasis}{Adrano} and \textcolor{ua-oasis}{S. Maria di Licodia}, 32 kilometers (20 mi) northwest of \textcolor{ua-oasis}{Catania}};
-\node[anchor=south] (map-in) at (\width, -.7*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-in.png}};
-\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (-1.2*\width, -1.1*\height) {Language Model}
-edge[latex-] (text-in);
-\node[align=left, anchor=north] (code) at (-.4*\width, -2.2*\height) {%
-\textsc{Intersection}(\\
-\quad\textsc{Between}(\textsc{Toponym}(001), \textsc{Toponym}(002)),\\
-\quad\textsc{Distance}(\textsc{Toponym}(003), 32, KM, NW)))}
-edge[latex-] (model);
-\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}};
-\draw[-latex] (code) -- (map-out.north);
-\draw[-latex] (map-in) -- (map-out.north);
+\begin{tikzpicture}[font=\footnotesize, inner sep=0pt, outer sep=1pt]
+\pgfmathsetmacro{\height}{1.5}
+\pgfmathsetmacro{\width}{3}
+\node[align=left, text width=.18\textwidth] (text-in) at (-2*\width, 1*\height) {between the towns of \textcolor{ua-oasis}{Adrano} and \textcolor{ua-oasis}{S. Maria di Licodia}, 32 kilometers (20 mi) northwest of \textcolor{ua-oasis}{Catania}};
+\node (map-in) at (-2*\width, -1*\height) {\includegraphics[width=.18\textwidth]{compgeo/map-biancavilla-in.png}};
+
+\node[align=left, text width=.18\textwidth] (pixel-text-in) at (-.9*\width, 1*\height) {TARGET is between the towns of RED and LIME, 32 kilometres (20 mi) northwest of BLUE.};
+\node (pixel-in) at (-.9*\width, -1*\height) {\includegraphics[width=.18\textwidth]{compgeo/pixel-biancavilla-in.png}};
+
+\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0*\width, 0*\height) {Multi-\\Modal\\Model};
+
+\node (pixel-out) at (.9*\width, 0*\height) {\includegraphics[width=.18\textwidth]{compgeo/pixel-biancavilla-out.png}};
+
+\node (map-out) at (2*\width, 0*\height) {\includegraphics[width=.18\textwidth]{compgeo/map-biancavilla-out.png}};
+
+\draw[-latex,thick] (text-in.east) -- (pixel-text-in.west);
+\draw[-latex,thick] (map-in.east) -- (pixel-in.west);
+\draw[-latex,thick] (pixel-text-in.east) -- (model);
+\draw[-latex,thick] (pixel-in.east) -- (model);
+\draw[-latex,thick] (model) -- (pixel-out);
+\draw[-latex,thick] (pixel-out) -- (map-out);
 \end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{Current language-vision models (LVMs) fall short}
+\begin{columns}
+\begin{column}{0.48\textwidth}
+Input: \\
+\smallskip
+\begin{tabular}{ p{.65\textwidth} l @{}}
+\textit{TARGET lies 6 km east of RED and south of the valley of the GREEN.} &
+\includegraphics[align=t,width=.25\textwidth]{compgeo/GL006_046_oracle_input.png}
+\end{tabular}
+
+\medskip
+Output: \\
+\begin{tabular}{ l l l @{}}
+\includegraphics[width=.25\textwidth]{compgeo/GL006_046_oracle_output_reference.png}
+&
+\includegraphics[width=.25\textwidth]{compgeo/GL006_046_oracle_output_clip.png}
+&
+\includegraphics[width=.25\textwidth]{compgeo/GL006_046_oracle_output_lisa.jpg}
+\\
+Expected & CLIP & LISA
+\end{tabular}
 \end{column}
 \pause
-\begin{column}{.45\textwidth}
-\begin{tikzpicture}[font=\footnotesize, inner sep=0pt]
-\pgfmathsetmacro{\height}{.75}
-\pgfmathsetmacro{\width}{1.5}
-\node[align=left, text width=.6\linewidth, anchor=south] (text-in) at (-\width, 0) {TARGET is between the towns of RED and LIME, 32 kilometres (20 mi) northwest of BLUE.};
-\node[anchor=south] (pixel-in) at (\width, 0) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-in.png}};
-\node[draw, fill=black!25, align=center, inner sep=5pt] (model) at (0, -\height) {Multi-Modal Model}
-edge[latex-] (text-in)
-edge[latex-] (pixel-in);
-\node[anchor=north] (pixel-out) at (0, -2*\height) {\includegraphics[width=.2\linewidth]{compgeo/pixel-biancavilla-out.png}}
-edge[latex-] (model);
-\node[anchor=north] (map-out) at (0, -4.5*\height) {\includegraphics[width=.3\linewidth]{compgeo/map-biancavilla-out.png}}
-edge[latex-] (pixel-out);
-\end{tikzpicture}
+\begin{column}{0.48\textwidth}
+Input: \\
+\smallskip
+\begin{tabular}{ p{.65\textwidth} l @{}}
+\textit{TARGET is ORANGE.} &
+\includegraphics[align=t,width=.25\textwidth]{compgeo/GL024_425_color_input.png}
+\end{tabular}
+
+\medskip
+Output: \\
+\begin{tabular}{ l l l @{}}
+\includegraphics[width=.25\textwidth]{compgeo/GL024_425_color_output_reference.png}
+&
+\includegraphics[width=.25\textwidth]{compgeo/GL024_425_color_output_clip.png}
+&
+\includegraphics[width=.25\textwidth]{compgeo/GL024_425_color_output_lisa.jpg}
+\\
+Expected & CLIP & LISA
+\end{tabular}
 \end{column}
 \end{columns}
+\pause
+\bigskip
+\alert{Opportunity: train more multi-modal understanding into LVMs}
 \end{frame}
 
 \section{Opportunity 2: Teaching LLMs to access external knowledge via tools}
