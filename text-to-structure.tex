@@ -438,8 +438,47 @@ Findings:
 
 \subsection{Timeline-based question answering}
 
-\begin{frame}{TODO}
+\begin{frame}{Timeline-based question answering with LLMs}
+TODO: figure with example and text-only LLM
 \end{frame}
+
+\begin{frame}{Integrating LLMs with external timeline knowledge}
+TODO: figure showing both input prompting and graph neural network
+\end{frame}
+
+\begin{frame}{Time question answering evaluation}
+Evaluation data:
+\begin{description}
+\item[TimeQAEasy]  TODO
+\item[TimeQAHard] TODO
+\item[SituatedQA] TODO
+\end{description}
+\end{frame}
+
+\begin{frame}{Structured prompt $>$ structured network}
+\begin{tabular}{l c c c c c c c c c }
+\toprule
+& \multicolumn{3}{c}{Exact match accuracy} \\
+Model
+& TimeQAEasy
+& TimeQAHard
+& SituatedQA \\
+\midrule
+LongT5  & \alert<2>{55.4} & \alert<2>{49.9} & \alert<2>{24.7} \\
+LongT5 + graph network  & \alert<2-3>{54.2} & \alert<2-3>{49.0} & \alert<2-3>{27.3} \\
+LongT5 + input markup  & \alert<3>{56.9} & \alert<3>{54.0} & \alert<3>{29.0} \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+Findings:
+\begin{itemize}
+\item<2-> Timelines integrated via graph networks sometimes hurt
+\item<3-> Timelines integrated via input markup consistently help
+\end{itemize}
+\end{frame}
+
+
 
 \section{Lesson 3: Predicting~Executable~Structure $>$ Network~Reasoning}
 
