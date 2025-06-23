@@ -446,12 +446,17 @@ TODO: figure with example and text-only LLM
 TODO: figure showing both input prompting and graph neural network
 \end{frame}
 
-\begin{frame}{Time question answering evaluation}
-Evaluation data:
-\begin{description}
-\item[TimeQAEasy]  TODO
-\item[TimeQAHard] TODO
-\item[SituatedQA] TODO
+\begin{frame}{Time question answering evaluation data}
+\begin{description}[\ ]
+\item[TimeQAEasy] \parencite{chen2021a} \\
+synthetic questions over Wikipedia, times mentioned in text  \\
+E.g., \textit{Which organization owned Razorfish (company) from 2007 to 2009?}
+\item[TimeQAHard]  \parencite{chen2021a} \\
+synthetic questions over Wikipedia, times not mentioned in text \\
+E.g., \textit{Which organization owned Razorfish (company) in Feb 2007?}
+\item[SituatedQA] \parencite{zhang-choi-2021-situatedqa} \\
+crowdsourced questions over Wikipedia \\
+E.g., \textit{Which COVID-19 vaccines have been authorized for adults in the US as of Jan 2021?}
 \end{description}
 \end{frame}
 
