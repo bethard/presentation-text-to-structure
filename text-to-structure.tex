@@ -62,7 +62,7 @@
     draw=#2,
     rectangle split parts=#1,
     fill=#2!40,
-    outer sep=1mm},
+    outer sep=1pt},
 }
 \pgfplotsset{compat=1.18}
 
@@ -484,37 +484,106 @@ George Washington:\\
 \end{frame}
 
 \begin{frame}{Injecting timelines into LLMs via graph networks}
-\end{frame}
-
-
-\begin{frame}{Injecting timelines into LLMs via structured prompts}
 \begin{tikzpicture}[
-  note/.style={draw, font=\scriptsize},
-  model/.style={draw, fill=black!25, align=center, inner sep=5pt, text width=.16\textwidth}
+  note/.style={draw, align=left, font=\scriptsize},
+  event/.style={note, inner sep=2pt, ua-oasis},
+  time/.style={note, inner sep=2pt, ua-red},
+  model/.style={draw, fill=black!25, align=center, inner sep=5pt, text width=.2\textwidth}
 ]
 
-\node[note, anchor=north, text width=.55\textwidth, label=Input] (question) at (0, 0) {%
+% Question
+\node[note, anchor=north, text width=.49\textwidth, label=Input] (question) at (0, 0) {%
 What was George Washington’s position from \textcolor{ua-red}{1790 - 1797}?};
 
-\node[note, text width=.55\textwidth, below=1ex of question] (context) {%
+% Context
+\node[note, text width=.49\textwidth, below=.8ex of question] (context) {%
 George Washington (\textcolor{ua-red}{February 22, 1732} -- \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
 In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of Chancellor, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
 %He started as the \textcolor{ua-oasis}{president} of United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots
 };
 
-\node[note, text width=.55\textwidth, below=1ex of context] (timeline)  {%
-George Washington:\\
-\quad lived: \\
-\qquad \textcolor{ua-red}{22 Feb 1732} --\\
-\qquad \textcolor{ua-red}{14 Dec 1799}\\
-\quad chancellor: \\
-\qquad \textcolor{ua-red}{30 Apr 1788} -- \\
-\qquad \textcolor{ua-red}{14 Dec 1799}\\
-\quad president: \\
-\qquad \textcolor{ua-red}{30 Apr 1789} -- \\
-\qquad \textcolor{ua-red}{04 Mar 1797}};
+% Timeline
+\node[note, text width=.49\textwidth, text height=.35\textheight, below=.8ex of context] (timeline) {};
+\node[time] (qt) at (-2.8, -4) {1790 -- 1797};
+\node[event, below=of qt] (qe) {position\\(What)};
+\node[time, right=1.5ex of qt] (dt2) {1788};
+\node[event, below=of dt2] (de2) {re-establish\\(Chancellor)};
+\node[time, right=3ex of dt2] (dt3) {18 Jan 1788};
+\node[event, below=of dt3] (de3) {elected\\(Chancellor)};
+\node[time, right=1.5ex of dt3] (dt4) {Jan 1788};
+\node[event, below=of dt4] (de4) {started\\(president)};
+\node[right=.5ex of dt4] (timelinedots) {\ldots};
+%\node[time, right=1ex of dt4] (dt5) {1798};
+%\node[event, below=of dt5] (de5) {stepped down\\(president)};
+\draw (qt) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (qe);
+\draw (dt2) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (de2);
+\draw (dt3) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (de3);
+\draw (dt4) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (de4);
+\draw (dt3.north) edge[thick, -latex, out=150, in=30] node[very near start, above, sloped, font=\tiny]{\texttt{before}} (qt.north);
+\draw (dt4.north) edge[thick, -latex, out=150, in=30] node[very near start, above, sloped, font=\tiny]{\texttt{before}} (qt.north);
 
-\node[note, anchor=north, text width=.34\textwidth, label=Prompt] (prompt) at (7.9, 0) {%
+% Network
+\node[hid={8}{black}, right=of question, label=Language Model] (layer0) {};
+\node[model, below=1.4ex of layer0] (gnn) {RelGraphConv};
+\node[hid={8}{black}, below=1.4ex of gnn] (layer1) {};
+\node[model, below=1.4ex of layer1] (transformer0) {Transformer};
+\node[below=1.4ex of transformer0] (dots) {...};
+\node[model, below=1.4ex of dots] (transformer1) {Transformer};
+\node[hid={8}{black}, below=1.4ex of transformer1] (layer2) {};
+\draw[thick, -latex] (layer0) to (gnn);
+\draw[thick, -latex] (gnn) to (layer1);
+\draw[thick, -latex] (layer1) to (transformer0);
+\draw[thick, -latex] (transformer1) to (layer2);
+
+% Edges
+\draw[thick, -latex] (question.east) to (layer0.west);
+\draw[thick, -latex] (context.east) to (layer0.west);
+\draw[thick, -latex] (timeline.east) to (gnn.west);
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}{Injecting timelines into LLMs via structured prompts}
+\begin{tikzpicture}[
+  note/.style={draw, align=left, font=\scriptsize},
+  event/.style={note, inner sep=2pt, ua-oasis},
+  time/.style={note, inner sep=2pt, ua-red},
+  model/.style={draw, fill=black!25, align=center, inner sep=5pt, text width=.25\textwidth}
+]
+
+% Question
+\node[note, anchor=north, text width=.49\textwidth, label=Input] (question) at (0, 0) {%
+What was George Washington’s position from \textcolor{ua-red}{1790 - 1797}?};
+
+% Context
+\node[note, text width=.49\textwidth, below=.8ex of question] (context) {%
+George Washington (\textcolor{ua-red}{February 22, 1732} -- \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
+In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of Chancellor, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
+%He started as the \textcolor{ua-oasis}{president} of United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots
+};
+
+% Timeline
+\node[note, text width=.49\textwidth, text height=.35\textheight, below=.8ex of context] (timeline) {};
+\node[time] (qt) at (-2.8, -4) {1790 -- 1797};
+\node[event, below=of qt] (qe) {position\\(What)};
+\node[time, right=1.5ex of qt] (dt2) {1788};
+\node[event, below=of dt2] (de2) {re-establish\\(Chancellor)};
+\node[time, right=3ex of dt2] (dt3) {18 Jan 1788};
+\node[event, below=of dt3] (de3) {elected\\(Chancellor)};
+\node[time, right=1.5ex of dt3] (dt4) {Jan 1788};
+\node[event, below=of dt4] (de4) {started\\(president)};
+\node[right=.5ex of dt4] (timelinedots) {\ldots};
+%\node[time, right=1ex of dt4] (dt5) {1798};
+%\node[event, below=of dt5] (de5) {stepped down\\(president)};
+\draw (qt) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (qe);
+\draw (dt2) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (de2);
+\draw (dt3) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (de3);
+\draw (dt4) edge[thick, -latex] node[above, sloped, font=\tiny]{\texttt{includes}} (de4);
+\draw (dt3.north) edge[thick, -latex, out=150, in=30] node[very near start, above, sloped, font=\tiny]{\texttt{before}} (qt.north);
+\draw (dt4.north) edge[thick, -latex, out=150, in=30] node[very near start, above, sloped, font=\tiny]{\texttt{before}} (qt.north);
+
+% Prompt
+\node[note, anchor=north, text width=.4\textwidth, label=Prompt] (prompt) at (7.9, 0) {%
 \texttt{question}:
 What was George Washington’s position from \textcolor{ua-red}{\xml{question\_time}{1790 - 1797}}? \\
 \texttt{context}: \ldots
@@ -524,9 +593,14 @@ He started as the president of United States in \textcolor{ua-red}{\xml{before}{
 In \textcolor{ua-red}{\xml{after}{1798, one year after that}}, he stepped down his presidency position\ldots
 };
 
-\draw[thick, -latex] (question.east) -- (prompt);
-\draw[thick, -latex] (context.east) -- (prompt);
-\draw[thick, -latex] (timeline.east) -- (prompt);
+% Language Model
+\node[model, below=1.8ex of prompt] (model) {Language Model};
+
+% Edges
+\draw[thick, -latex] (question.east) to (prompt);
+\draw[thick, -latex] (context.east) to (prompt);
+\draw[thick, -latex] (timeline.east) to (prompt);
+\draw[thick, -latex] (prompt.south) to (model);
 \end{tikzpicture}
 \end{frame}
 
@@ -564,7 +638,7 @@ LongT5 + structured prompt  & \alert<3>{56.9} & \alert<3>{54.0} & \alert<3>{29.0
 Findings:
 \begin{itemize}
 \item<2-> Timelines integrated via graph networks sometimes hurt
-\item<3-> Timelines integrated via structured prompt consistently help
+\item<3-> Timelines integrated via structured prompts consistently help
 \end{itemize}
 \end{frame}
 
