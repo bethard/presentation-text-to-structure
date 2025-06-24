@@ -188,6 +188,8 @@
 % short command for drawing an interval the width of a single primary interval
 \newcommand{\tikztimelineprimaryinterval}[4][]{\tikztimelineinterval[#1]{#2}{#2+1}{#3}{#4}}
 
+\newcommand{\xml}[2]{\texttt{{\textless}#1{\textgreater}}#2\texttt{{\textless}/#1{\textgreater}}}
+
 \author[Bethard]{Steven Bethard, Ph.D.}
 \institute[Arizona]{Associate Professor \\ College of Information Science \\ University of Arizona}
 
@@ -438,31 +440,94 @@ Findings:
 \subsection{Timeline-based question answering}
 
 \begin{frame}{Timeline-based question answering with LLMs}
-\begin{tikzpicture}
+\begin{tikzpicture}[
+  note/.style={draw, font=\footnotesize},
+  model/.style={draw, fill=black!25, align=center, inner sep=5pt, text width=.16\textwidth}
+]
 
-\node[draw, font=\footnotesize, text width=.4\textwidth, label=Question] (question) at (0, 0) {%
+\node[note, text width=.4\textwidth, label=Question] (question) at (0, 0) {%
 What was George Washington’s \textcolor{ua-oasis}{position} from \textcolor{ua-red}{1790 - 1797}?};
 
-\node[draw, font=\footnotesize, text width=.4\textwidth, below=3ex of question, label=Context] (context) {%
-George Washington (\textcolor{ua-red}{February 22, 1732} – \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
+\node[note, text width=.4\textwidth, below=3ex of question, label=Context] (context) {%
+George Washington (\textcolor{ua-red}{February 22, 1732} -- \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
 %Congress created the Continental Army on June 14, 1775, and Samuel and John Adams nominated Washington to become its Commander-in-Chief\ldots
 %Washington bade farewell to his officers at Fraunces Tavern in December 1783 and resigned his commission days later.
 In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of \textcolor{ua-oasis}{Chancellor}, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
-He started as the \textcolor{ua-oasis}{president} of United Sates in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position.};
+He started as the \textcolor{ua-oasis}{president} of United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots};
 
-\node[draw, fill=black!25, align=center, inner sep=5pt, right=of question] (model)  {Language \\ Model};
+\node[model, right=of question] (model)  {Language \\ Model};
 
-\node[draw, font=\footnotesize, text width=.12\textwidth, label=Answer, right=of model] (answer) {%
+\visible<2->{\node[model, right=of context] (ie)  {Information \\ Extraction};}
+
+\visible<2->{\node[note, text width=.22\textwidth, label=Timeline, right=of ie] (timeline)  {%
+George Washington:\\
+\quad lived: \\
+\qquad \textcolor{ua-red}{22 Feb 1732} --\\
+\qquad \textcolor{ua-red}{14 Dec 1799}\\
+\quad chancellor: \\
+\qquad \textcolor{ua-red}{30 Apr 1788} -- \\
+\qquad \textcolor{ua-red}{14 Dec 1799}\\
+\quad president: \\
+\qquad \textcolor{ua-red}{30 Apr 1789} -- \\
+\qquad \textcolor{ua-red}{04 Mar 1797}};}
+
+\node[note, text width=.22\textwidth, label=Answer, right=of model] (answer) {%
 \textcolor{ua-oasis}{Presidency}, \textcolor{ua-oasis}{Chancellor}};
 
+\visible<2->{\draw[thick, -latex] (context) -- (ie);}
+\visible<2->{\draw[thick, -latex] (ie) -- (timeline);}
 \draw[thick, -latex] (question) -- (model);
 \draw[thick, -latex] (context) -- (model);
+\visible<2->{\draw[thick, -latex] (timeline) -- (model);}
 \draw[thick, -latex] (model) -- (answer);
 \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Integrating LLMs with external timeline knowledge}
-TODO: figure showing both input prompting and graph neural network
+\begin{frame}{Injecting timelines into LLMs via graph networks}
+\end{frame}
+
+
+\begin{frame}{Injecting timelines into LLMs via structured prompts}
+\begin{tikzpicture}[
+  note/.style={draw, font=\scriptsize},
+  model/.style={draw, fill=black!25, align=center, inner sep=5pt, text width=.16\textwidth}
+]
+
+\node[note, anchor=north, text width=.55\textwidth, label=Input] (question) at (0, 0) {%
+What was George Washington’s position from \textcolor{ua-red}{1790 - 1797}?};
+
+\node[note, text width=.55\textwidth, below=1ex of question] (context) {%
+George Washington (\textcolor{ua-red}{February 22, 1732} -- \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
+In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of Chancellor, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
+%He started as the \textcolor{ua-oasis}{president} of United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots
+};
+
+\node[note, text width=.55\textwidth, below=1ex of context] (timeline)  {%
+George Washington:\\
+\quad lived: \\
+\qquad \textcolor{ua-red}{22 Feb 1732} --\\
+\qquad \textcolor{ua-red}{14 Dec 1799}\\
+\quad chancellor: \\
+\qquad \textcolor{ua-red}{30 Apr 1788} -- \\
+\qquad \textcolor{ua-red}{14 Dec 1799}\\
+\quad president: \\
+\qquad \textcolor{ua-red}{30 Apr 1789} -- \\
+\qquad \textcolor{ua-red}{04 Mar 1797}};
+
+\node[note, anchor=north, text width=.34\textwidth, label=Prompt] (prompt) at (7.9, 0) {%
+\texttt{question}:
+What was George Washington’s position from \textcolor{ua-red}{\xml{question\_time}{1790 - 1797}}? \\
+\texttt{context}: \ldots
+George Washington (\textcolor{ua-red}{\xml{before}{February 22, 1732 -- December 14, 1799}}) was an American political leader\ldots
+In \textcolor{ua-red}{\xml{before}{1788}}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of Chancellor, and elected Washington to the office on \textcolor{ua-red}{\xml{before}{January 18}}\ldots
+He started as the president of United States in \textcolor{ua-red}{\xml{before}{Jan 1788}}, \ldots
+In \textcolor{ua-red}{\xml{after}{1798, one year after that}}, he stepped down his presidency position\ldots
+};
+
+\draw[thick, -latex] (question.east) -- (prompt);
+\draw[thick, -latex] (context.east) -- (prompt);
+\draw[thick, -latex] (timeline.east) -- (prompt);
+\end{tikzpicture}
 \end{frame}
 
 \begin{frame}{Time question answering evaluation data}
@@ -480,7 +545,8 @@ E.g., \textit{Which COVID-19 vaccines have been authorized for adults in the US 
 \end{frame}
 
 \begin{frame}{Structured prompt \textgreater\ structured network}
-\begin{tabular}{l c c c c c c c c c }
+\setlength{\tabcolsep}{.3em}
+\begin{tabular}{l c c c}
 \toprule
 & \multicolumn{3}{c}{Exact match accuracy} \\
 Model
@@ -490,7 +556,7 @@ Model
 \midrule
 LongT5  & \alert<2>{55.4} & \alert<2>{49.9} & \alert<2>{24.7} \\
 LongT5 + graph network  & \alert<2-3>{54.2} & \alert<2-3>{49.0} & \alert<2-3>{27.3} \\
-LongT5 + input markup  & \alert<3>{56.9} & \alert<3>{54.0} & \alert<3>{29.0} \\
+LongT5 + structured prompt  & \alert<3>{56.9} & \alert<3>{54.0} & \alert<3>{29.0} \\
 \bottomrule
 \end{tabular}
 
@@ -498,7 +564,7 @@ LongT5 + input markup  & \alert<3>{56.9} & \alert<3>{54.0} & \alert<3>{29.0} \\
 Findings:
 \begin{itemize}
 \item<2-> Timelines integrated via graph networks sometimes hurt
-\item<3-> Timelines integrated via input markup consistently help
+\item<3-> Timelines integrated via structured prompt consistently help
 \end{itemize}
 \end{frame}
 
