@@ -438,7 +438,27 @@ Findings:
 \subsection{Timeline-based question answering}
 
 \begin{frame}{Timeline-based question answering with LLMs}
-TODO: figure with example and text-only LLM
+\begin{tikzpicture}
+
+\node[draw, font=\footnotesize, text width=.4\textwidth, label=Question] (question) at (0, 0) {%
+What was George Washington’s \textcolor{ua-oasis}{position} from \textcolor{ua-red}{1790 - 1797}?};
+
+\node[draw, font=\footnotesize, text width=.4\textwidth, below=3ex of question, label=Context] (context) {%
+George Washington (\textcolor{ua-red}{February 22, 1732} – \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
+%Congress created the Continental Army on June 14, 1775, and Samuel and John Adams nominated Washington to become its Commander-in-Chief\ldots
+%Washington bade farewell to his officers at Fraunces Tavern in December 1783 and resigned his commission days later.
+In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of \textcolor{ua-oasis}{Chancellor}, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
+He started as the \textcolor{ua-oasis}{president} of United Sates in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position.};
+
+\node[draw, fill=black!25, align=center, inner sep=5pt, right=of question] (model)  {Language \\ Model};
+
+\node[draw, font=\footnotesize, text width=.12\textwidth, label=Answer, right=of model] (answer) {%
+\textcolor{ua-oasis}{Presidency}, \textcolor{ua-oasis}{Chancellor}};
+
+\draw[thick, -latex] (question) -- (model);
+\draw[thick, -latex] (context) -- (model);
+\draw[thick, -latex] (model) -- (answer);
+\end{tikzpicture}
 \end{frame}
 
 \begin{frame}{Integrating LLMs with external timeline knowledge}
