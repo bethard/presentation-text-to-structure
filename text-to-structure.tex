@@ -30,14 +30,18 @@
 
 \addbibresource{bethard.bib}
 \addbibresource{extra.bib}
+
 \renewcommand*{\bibfont}{\scriptsize}
+
 \newcommand{\subtitlecite}[1]{{\hskip0pt plus 1filll \scriptsize\parencite{#1}}}
+
 \newcommand{\headshot}[3]{{\tiny\setlength{\tabcolsep}{0pt}%
 \begin{tabular}{c}
 \includegraphics[height=.2\textheight]{#1} \\
 #2 \\
 #3
 \end{tabular}}}
+
 \newcommand{\sectionbox}{%
 \centering
 \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
@@ -80,6 +84,7 @@
 \newcommand{\fullheight}{\vphantom{(p}}
 
 \newcommand{\raisegraphics}[3]{\raisebox{-#1\height}{\includegraphics[#2]{#3}}}
+
 \newcommand{\funding}[2]{\raisegraphics{.2}{height=.05\textheight}{#1} #2}
 
 
@@ -114,79 +119,6 @@
   }%
 }
 \newcommand{\AnnotateTwo}[4][]{\annotate[#1]{#2}{2}{two}{#3}{#4}}
-\newcommand{\AnnotateThree}[5][]{\annotate[#1]{#2}{3}{three}{#3}{%
-\scriptsize\fullheight\textsc{#4}%
-\nodepart{three}%
-#5}}
-\newcommand{\AnnotateFour}[6][]{\annotate[#1]{#2}{4}{four}{#3}{%
-\scriptsize\fullheight\textsc{#4}%
-\nodepart{three}%
-\scriptsize\fullheight\textsc{#5}%
-\nodepart{four}%
-#6}}
-\newcommand{\AnnotateFive}[7][]{\annotate[#1]{#2}{5}{five}{#3}{%
-\scriptsize\fullheight\textsc{#4}%
-\nodepart{three}%
-\scriptsize\fullheight\textsc{#5}%
-\nodepart{four}%
-\scriptsize\fullheight\textsc{#6}%
-\nodepart{five}%
-#7}}
-\newcommand{\AnnotateSix}[8][]{\annotate[#1]{#2}{6}{six}{#3}{%
-\scriptsize\fullheight\textsc{#4}%
-\nodepart{three}%
-\scriptsize\fullheight\textsc{#5}%
-\nodepart{four}%
-\scriptsize\fullheight\textsc{#6}%
-\nodepart{five}%
-\scriptsize\fullheight\textsc{#7}%
-\nodepart{six}%
-#8}}
-
-
-% command for adding links
-% #1: drawing options (typically, the color)
-% #2: edge options (typically out=NN, in=NN)
-% #3: start anchor for arrow
-% #4: end anchor for arrow
-\newcommand{\AnnotateLink}[4][]{%
-\path[color=time,thick,->,#1] (#3) node [circle,color=time,fill,inner sep=0.25ex,#1] {} edge[#2] (#4);}
-
-
-% command for drawing a timeline
-% #1: drawing options
-% #2: number of primary intervals
-% #3: number of secondary intervals per primary interval
-\newcommand{\tikztimeline}[3][]{%
-\pgfmathsetmacro{\primaryend}{#2-1}
-\pgfmathsetmacro{\secondaryend}{#3-1}
-% horizontal line
-\draw[#1,dashed] (-0.33,0) -- (0,0);
-\draw[#1] (0,0) -- (#2,0);
-\draw[#1,dashed,-latex] (#2,0) -- (#2 + 0.33,0);
-% primary ticks
-\foreach \primary  in {0,...,\primaryend} {%
-  \draw[#1] (\primary,0) -- (\primary,\normalbaselineskip);
-  % secondary ticks
-  \foreach \secondary [evaluate=\secondary] in {\primary+1/#3,\primary+.../#3,\primary+\secondaryend/#3} {
-    \draw[#1] (\secondary,0) -- (\secondary,0.5\normalbaselineskip);
-  }
-}
-\draw[#1] (#2,0) -- (#2,\normalbaselineskip);
-}
-
-% command for drawing a interval on a timeline
-% #1: drawing options
-% #2: start time (i.e., start x position)
-% #3: end time (i.e., start x position)
-% #4: vertical tier (i.e., y position)
-% #5: text
-\newcommand{\tikztimelineinterval}[5][]{%
-\draw[line width=0.9\normalbaselineskip,draw=time,text=white,#1] (#2, #4\normalbaselineskip) -- (#3, #4\normalbaselineskip) node[midway,font=\footnotesize] {#5};
-}
-
-% short command for drawing an interval the width of a single primary interval
-\newcommand{\tikztimelineprimaryinterval}[4][]{\tikztimelineinterval[#1]{#2}{#2+1}{#3}{#4}}
 
 \newcommand{\xml}[2]{\texttt{{\textless}#1{\textgreater}}#2\texttt{{\textless}/#1{\textgreater}}}
 
