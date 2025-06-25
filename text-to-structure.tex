@@ -453,7 +453,7 @@ George Washington (\textcolor{ua-red}{February 22, 1732} -- \textcolor{ua-red}{D
 %Congress created the Continental Army on June 14, 1775, and Samuel and John Adams nominated Washington to become its Commander-in-Chief\ldots
 %Washington bade farewell to his officers at Fraunces Tavern in December 1783 and resigned his commission days later.
 In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of \textcolor{ua-oasis}{Chancellor}, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
-He started as the \textcolor{ua-oasis}{president} of United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots};
+He started as the \textcolor{ua-oasis}{president} of the United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots};
 
 \node[model, right=of question] (model)  {Language \\ Model};
 
@@ -493,13 +493,14 @@ George Washington:\\
 
 % Question
 \node[note, anchor=north, text width=.49\textwidth, label=Input] (question) at (0, 0) {%
-What was George Washington’s position from \textcolor{ua-red}{1790 - 1797}?};
+What was George Washington’s \textcolor{ua-oasis}{position} from \textcolor{ua-red}{1790 - 1797}?};
 
 % Context
 \node[note, text width=.49\textwidth, below=.8ex of question] (context) {%
 George Washington (\textcolor{ua-red}{February 22, 1732} -- \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
-In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of Chancellor, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
-%He started as the \textcolor{ua-oasis}{president} of United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots
+In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of \textcolor{ua-oasis}{Chancellor}, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
+He started as the \textcolor{ua-oasis}{president} of the\ldots
+%United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots
 };
 
 % Timeline
@@ -553,13 +554,14 @@ In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& 
 
 % Question
 \node[note, anchor=north, text width=.49\textwidth, label=Input] (question) at (0, 0) {%
-What was George Washington’s position from \textcolor{ua-red}{1790 - 1797}?};
+What was George Washington’s \textcolor{ua-oasis}{position} from \textcolor{ua-red}{1790 - 1797}?};
 
 % Context
 \node[note, text width=.49\textwidth, below=.8ex of question] (context) {%
 George Washington (\textcolor{ua-red}{February 22, 1732} -- \textcolor{ua-red}{December 14, 1799}) was an American political leader\ldots
-In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of Chancellor, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
-%He started as the \textcolor{ua-oasis}{president} of United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots
+In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of \textcolor{ua-oasis}{Chancellor}, and elected Washington to the office on \textcolor{ua-red}{January 18}\ldots
+He started as the \textcolor{ua-oasis}{president} of the\ldots
+%United States in \textcolor{ua-red}{Jan 1788}, \ldots in \textcolor{ua-red}{1798, one year after that}, he stepped down his \textcolor{ua-oasis}{presidency} position\ldots
 };
 
 % Timeline
@@ -583,13 +585,13 @@ In \textcolor{ua-red}{1788}, the Board of Visitors of the College of William \& 
 \draw (dt4.north) edge[thick, -latex, out=150, in=30] node[very near start, above, sloped, font=\tiny]{\texttt{before}} (qt.north);
 
 % Prompt
-\node[note, anchor=north, text width=.4\textwidth, label=Prompt] (prompt) at (7.9, 0) {%
+\node[note, anchor=north, text width=.41\textwidth, label=Prompt] (prompt) at (7.9, 0) {%
 \texttt{question}:
 What was George Washington’s position from \textcolor{ua-red}{\xml{question\_time}{1790 - 1797}}? \\
 \texttt{context}: \ldots
-George Washington (\textcolor{ua-red}{\xml{before}{February 22, 1732 -- December 14, 1799}}) was an American political leader\ldots
+George Washington (\textcolor{ua-red}{\xml{before}{February 22, 1732}} -- \textcolor{ua-red}{\xml{after}{December 14, 1799}}) was an American political leader\ldots
 In \textcolor{ua-red}{\xml{before}{1788}}, the Board of Visitors of the College of William \& Mary decided to re-establish the position of Chancellor, and elected Washington to the office on \textcolor{ua-red}{\xml{before}{January 18}}\ldots
-He started as the president of United States in \textcolor{ua-red}{\xml{before}{Jan 1788}}, \ldots
+He started as the president of the United States in \textcolor{ua-red}{\xml{before}{Jan 1788}}, \ldots
 In \textcolor{ua-red}{\xml{after}{1798, one year after that}}, he stepped down his presidency position\ldots
 };
 
